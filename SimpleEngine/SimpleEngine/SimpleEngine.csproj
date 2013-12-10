@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Classes\Board.cs" />
     <Compile Include="Classes\Game.cs" />
+    <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Classes\TurnResultCalculator.cs" />
     <Compile Include="Classes\DefaultMoveValidator.cs" />
     <Compile Include="Interfaces\ITurnResultCalculator.cs" />

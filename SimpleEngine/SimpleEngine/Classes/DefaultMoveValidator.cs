@@ -10,7 +10,8 @@ namespace SimpleEngine.Classes
 {
     class DefaultMoveValidator : ITurnValidator
     {
-        public bool Validate(int rowIndex, int columnIndex, CellType newCellTypeType, Board board)
+        //public bool Validate(Turn turn, Board board)
+        public bool Validate(int rowIndex, int columnIndex, CellType newCellValue, Board board)
         {
             throw new NotImplementedException();
         }

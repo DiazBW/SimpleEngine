@@ -5,12 +5,14 @@ using SimpleEngine.Interfaces;
 
 namespace SimpleEngine.Classes
 {
-    public class Game
+    public class Game : IGame
     {
+        private List<Turn> _history;
         private const Int32 BOARD_SIZE = 10;
+        private Int32 _activePlayerId;
 
-        private ITurnResultCalculator _turnResultCalculator;
-        private ITurnValidator _turnValidator;
+        private readonly ITurnResultCalculator _turnResultCalculator;
+        private readonly ITurnValidator _turnValidator;
 
         public readonly Int32 PlayerOneId;
         public readonly Int32 PlayerTwoId;
@@ -20,23 +22,76 @@ namespace SimpleEngine.Classes
         {
             PlayerOneId = playerOneId;
             PlayerTwoId = playerTwoId;
+            _activePlayerId = PlayerOneId;
             Board = new Board(BOARD_SIZE);
 
             //TODO: inject via autofac
             _turnValidator = new DefaultMoveValidator();
             _turnResultCalculator = new TurnResultCalculator();
+            _history = new List<Turn>();
+            
         }
 
-        //TODO: playerId or cellValue ? 
-        public Int32 Turn(Int32 rowIndex, Int32 columnIndex)
+        public bool IsPlayerInGame(Int32 playerId)
         {
-            //GetCellTypeForTurn
-            //_turnValidator.Validate(rowIndex: y, columnIndex: x, newCellValue: newStatus, board: Board);
+            return PlayerOneId == playerId || PlayerTwoId == playerId;
+        }
+
+        public Int32 GetWinPlayerId()
+        {
+            throw  new NotImplementedException();
+        }
+
+        public bool IsGameOver()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Int32 GetActivePlayerId()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsPlayerActive(Int32 playerId)
+        {
+            return _activePlayerId == playerId;
+        }
+
+        public CellType GetActivePlayerCellType()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Int32 Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId)
+        {
+            PlayerIdValidation(playerId);
+
+            var newCellType = GetActivePlayerCellType();
+            _turnValidator.Validate(rowIndex, columnIndex, newCellType, Board);
+
             //SetCellStatus
             //_turnResultCalculator.CalculateNewBoardState(ref Board);
             // GetAnotherUserId
+            // SaveHistory
+            // var newTurn = new Turn() { RowIndex = rowIndex, ColumnIndex = columnIndex, PlayerId = playerId};
             return 0;
         }
+
+        private void PlayerIdValidation(int playerId)
+        {
+            if (!IsPlayerInGame(playerId))
+            {
+                var msg = String.Format("The game has not player with id {0}.", playerId);
+                throw new ArgumentException(msg);
+            }
+
+            if (!IsPlayerActive(playerId))
+            {
+                var msg = String.Format("Player with id {0} can not perform turn. Now is another player's turn.", playerId);
+                throw new ArgumentException(msg);
+            }
+        }
+
 
         public void SetCellStatus(Int32 x, Int32 y, CellType newStatus, Int32 playerId)
         {
@@ -57,6 +112,12 @@ namespace SimpleEngine.Classes
             Board.Cells[x, y] = newStatus;
         }
 
+        //private static bool IsCoordinatePairInRange(Int32 x, Int32 y)
+        //{
+        //    return (x >= 0 && x < BOARD_SIZE)
+        //           && (y >= 0 && y < BOARD_SIZE);
+        //}
+
         public void ClearBoard()
         {
             for (var i = 0; i < BOARD_SIZE; i++)
@@ -66,12 +127,6 @@ namespace SimpleEngine.Classes
                     Board.Cells[i, j] = CellType.Empty;
                 }
             }
-        }
-
-        private static bool IsCoordinatePairInRange(Int32 x, Int32 y)
-        {
-            return (x >= 0 && x < BOARD_SIZE)
-                   && (y >= 0 && y < BOARD_SIZE);
         }
 
         public List<String> GetBoardTextRepresentation()
@@ -102,5 +157,12 @@ namespace SimpleEngine.Classes
             }
             return res;
         }
-    }   
+    }
+
+    struct Turn
+    {
+        public Int32 RowIndex;
+        public Int32 ColumnIndex;
+        public Int32 PlayerId;
+    }
 }
