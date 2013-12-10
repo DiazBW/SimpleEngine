@@ -1,0 +1,2 @@
+2h - initial commit
+2h - GitHub settings with ssh
