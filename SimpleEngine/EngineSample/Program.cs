@@ -5,7 +5,8 @@
 //using System.Security.AccessControl;
 //using System.Text;
 //using System.Threading.Tasks;
-using SimpleEngine;
+//using SimpleEngine;
+using SimpleEngine.Classes;
 
 namespace EngineSample
 {
@@ -21,12 +22,12 @@ namespace EngineSample
 
             var newGame = new Game(playerOneId: 0, playerTwoId: 1);
 
-            newGame.SetCellStatus(0, 0, Cell.White, activePlayerId);
-            newGame.SetCellStatus(1, 1, Cell.White, activePlayerId);
-            newGame.SetCellStatus(2, 2, Cell.White, activePlayerId);
-            newGame.SetCellStatus(7, 7, Cell.Black, activePlayerId);
-            newGame.SetCellStatus(8, 8, Cell.Black, activePlayerId);
-            newGame.SetCellStatus(9, 9, Cell.Black, activePlayerId);
+            newGame.SetCellStatus(0, 0, CellType.White, activePlayerId);
+            newGame.SetCellStatus(1, 1, CellType.White, activePlayerId);
+            newGame.SetCellStatus(2, 2, CellType.White, activePlayerId);
+            newGame.SetCellStatus(7, 7, CellType.Black, activePlayerId);
+            newGame.SetCellStatus(8, 8, CellType.Black, activePlayerId);
+            newGame.SetCellStatus(9, 9, CellType.Black, activePlayerId);
 
             ActionCycle(newGame);
             
@@ -59,11 +60,11 @@ namespace EngineSample
                         var y = int.Parse(inputArgs[2]);
                         var value = inputArgs[3];
                         if (value == "x")
-                            game.SetCellStatus(x, y, Cell.White, activePlayerId);
+                            game.SetCellStatus(x, y, CellType.White, activePlayerId);
                         if (value == "o")
-                            game.SetCellStatus(x, y, Cell.Black, activePlayerId);
+                            game.SetCellStatus(x, y, CellType.Black, activePlayerId);
                         if (value == ".")
-                            game.SetCellStatus(x, y, Cell.Empty, activePlayerId);
+                            game.SetCellStatus(x, y, CellType.Empty, activePlayerId);
                         break;
                     case "clear":
                         game.ClearBoard();

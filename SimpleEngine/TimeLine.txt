@@ -1,2 +1,3 @@
 2h - initial commit
 2h - GitHub settings with ssh
+45m - refactoring with interfaces and separation.

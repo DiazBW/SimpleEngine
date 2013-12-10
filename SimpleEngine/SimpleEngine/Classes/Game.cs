@@ -30,6 +30,7 @@ namespace SimpleEngine.Classes
         //TODO: playerId or cellValue ? 
         public Int32 Turn(Int32 rowIndex, Int32 columnIndex)
         {
+            //GetCellTypeForTurn
             //_turnValidator.Validate(rowIndex: y, columnIndex: x, newCellValue: newStatus, board: Board);
             //SetCellStatus
             //_turnResultCalculator.CalculateNewBoardState(ref Board);
