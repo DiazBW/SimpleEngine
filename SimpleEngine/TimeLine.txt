@@ -2,3 +2,4 @@
 2h - GitHub settings with ssh
 1h - refactoring with interfaces and separation.
 1h - turn validator exceptions and few restructuring game class.
+1h - shapes
