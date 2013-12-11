@@ -5,6 +5,7 @@ using SimpleEngine.Interfaces;
 
 namespace SimpleEngine.Classes
 {
+    // TODO: maybe add base class
     public class Game : IGame
     {
         private readonly List<Turn> _history;
@@ -45,6 +46,11 @@ namespace SimpleEngine.Classes
         public bool IsGameOver()
         {
             throw new NotImplementedException();
+        }
+
+        public CellType GetCellValue(Int32 rowIndex, Int32 columnIndex)
+        {
+            return Board.Cells[rowIndex, columnIndex];
         }
 
         public void Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId)

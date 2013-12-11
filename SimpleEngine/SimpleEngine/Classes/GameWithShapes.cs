@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using SimpleEngine.Interfaces;
 
 namespace SimpleEngine.Classes
@@ -9,9 +8,11 @@ namespace SimpleEngine.Classes
     public class GameWithShapes : IGame
     {
         private readonly List<Turn> _history;
-        private const Int32 BOARD_SIZE = 10;
+        private const Int32 BOARD_SIZE = 19;
 
-        public int ActivePlayerId { get; private set; }
+        public Boolean IsGameOver { get; private set; }
+
+        public Int32 ActivePlayerId { get; private set; }
         public CellType ActiveCellType
         {
             get { return ActivePlayerId == PlayerOneId ? CellType.Black : CellType.White; }
@@ -45,13 +46,27 @@ namespace SimpleEngine.Classes
             throw new NotImplementedException();
         }
 
-        public bool IsGameOver()
+        public CellType GetCellValue(Int32 rowIndex, Int32 columnIndex)
         {
-            throw new NotImplementedException();
+            return Board.Cells[rowIndex, columnIndex];
+        }
+
+        //public bool IsGameOver()
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public void Surrender(Int32 playerId)
+        {
+            PlayerIdValidation(playerId);
+
+            IsGameOver = true;
         }
 
         public void Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId)
         {
+            if (IsGameOver) return;
+
             ValidateTurn(rowIndex, columnIndex, playerId);
 
             TurnProceed(rowIndex, columnIndex);
@@ -64,6 +79,7 @@ namespace SimpleEngine.Classes
         //TODO: remove later
         public void DevTurn(Int32 rowIndex, Int32 columnIndex)
         {
+            if (IsGameOver) return;
             //ValidateTurn(rowIndex, columnIndex, playerId);
 
             TurnProceed(rowIndex, columnIndex);
@@ -76,7 +92,6 @@ namespace SimpleEngine.Classes
         private void TurnProceed(Int32 rowIndex, Int32 columnIndex)
         {
             Board.Cells[rowIndex, columnIndex] = ActiveCellType;
-
         }
 
         private void AddHistoryItem(int rowIndex, int columnIndex)
@@ -138,6 +153,8 @@ namespace SimpleEngine.Classes
 
         public void ClearBoard()
         {
+            if (IsGameOver) return;
+
             for (var i = 0; i < BOARD_SIZE; i++)
             {
                 for (var j = 0; j < BOARD_SIZE; j++)
