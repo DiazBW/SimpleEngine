@@ -19,7 +19,7 @@ namespace SimpleEngine.Classes
                 throw new TurnOutOfRangeException(rowIndex, columnIndex, newCellValue);
             }
             //TODO: col and row places!!
-            if (board.Cells[columnIndex, rowIndex] != CellType.Empty)
+            if (board.Cells[rowIndex, columnIndex] != CellType.Empty)
             {
                 throw new TurnToBusyCellException(rowIndex, columnIndex, newCellValue);
             }

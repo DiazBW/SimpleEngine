@@ -33,6 +33,10 @@ namespace EngineTestApp
         public static Image EmptyBottomCell { get; private set; }
 
         public IGame TheGame;
+
+        public const Int32 PLAYER_ONE_ID = 0;
+        public const Int32 PLAYER_TWO_ID = 1;
+        public Int32 ActivePlayerId = PLAYER_ONE_ID;
         
         public MainForm()
         {
@@ -60,8 +64,8 @@ namespace EngineTestApp
         private void MainForm_Load(object sender, EventArgs e)
         {
             CreateImages();
-            
-            TheGame = new GameWithShapes(playerOneId: 0, playerTwoId: 1);
+
+            TheGame = new GameWithShapes(PLAYER_ONE_ID, PLAYER_TWO_ID);
         }
 
         private void CreateImages(int gameSize = 19)
@@ -92,7 +96,17 @@ namespace EngineTestApp
             //var msg = String.Format("{0} : {1}     {2}", cell.RowIndex, cell.ColumnIndex, cell.CellValue);
             //MessageBox.Show(msg);
 
-            TheGame.DevTurn(cell.RowIndex, cell.ColumnIndex);
+            try
+            {
+                TheGame.Turn(cell.RowIndex, cell.ColumnIndex, ActivePlayerId);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+
+            ActivePlayerId = ActivePlayerId == PLAYER_ONE_ID ? PLAYER_TWO_ID : PLAYER_ONE_ID;
 
             //CellType newValue = TheGame.GetCellValue(cell.RowIndex, cell.ColumnIndex);
             //cell.SetNewValue(newValue);

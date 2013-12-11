@@ -141,16 +141,18 @@ namespace SimpleEngine.Classes
             RegenerateShapes(Board);
             RemoveWithoutBreath();
             //_turnResultCalculator.CalculateNewBoardState(ref Board);
-            for (var i = 0; i < Board.Size; i++)
+
+            ClearBoard();
+            foreach (var shape in Shapes)
             {
-                for (var j = 0; j < Board.Size; j++)
+                foreach (var cell in shape.Cells)
                 {
-                    var shape = Shapes.Find(s => s.Contains(rowIndex: i, columnIndex: j));
-                    Board.Cells[i, j] = shape == null ? CellType.Empty : shape.CellTypeValue;
+                    Board.Cells[cell.RowIndex, cell.ColumnIndex] = shape.CellTypeValue;
                 }
             }
         }
 
+        //TODO: clear active player id also
         public void ClearBoard()
         {
             if (IsGameOver) return;
@@ -193,7 +195,13 @@ namespace SimpleEngine.Classes
 
         public void RemoveWithoutBreath()
         {
-            Shapes.RemoveAll(sh => !HaveShapeBreath(sh));
+            for (var i = 0; i < Shapes.Count; i++)
+            {
+                if (!HaveShapeBreath(Shapes[i]))
+                {
+                    Shapes.RemoveAt(i);
+                }
+            }
         }
 
         private bool HaveShapeBreath(Shape shape)
@@ -248,7 +256,7 @@ namespace SimpleEngine.Classes
     {
         public CellType CellTypeValue { get; private set; }
         // Switch to set ?
-        private readonly List<CellStruct> Cells;
+        public readonly List<CellStruct> Cells;
 
         public Shape(CellType cellTypeValue)
         {
@@ -277,13 +285,12 @@ namespace SimpleEngine.Classes
         //    Cells.Remove(cell);
         //}
 
-        public List<CellStruct> GetConnectionCells(int maxX, int maxY)
+        public List<CellStruct> GetConnectionCells(int maxRowValue, int maxColumnValue)
         {
             var connections = new List<CellStruct>();
             foreach (var cellStruct in Cells)
             {
-
-                if (cellStruct.RowIndex - 1 > 0 && cellStruct.RowIndex - 1 <= maxX)
+                if (cellStruct.RowIndex - 1 >= 0 && cellStruct.RowIndex - 1 < maxRowValue)
                 {
                     var row = cellStruct.RowIndex - 1;
                     var col = cellStruct.ColumnIndex;
@@ -291,7 +298,7 @@ namespace SimpleEngine.Classes
                         connections.Add(new CellStruct() { RowIndex = row, ColumnIndex = col });
                 }
 
-                if (cellStruct.RowIndex + 1 > 0 && cellStruct.RowIndex + 1 <= maxX)
+                if (cellStruct.RowIndex + 1 >= 0 && cellStruct.RowIndex + 1 < maxRowValue)
                 {
                     var row = cellStruct.RowIndex + 1;
                     var col = cellStruct.ColumnIndex;
@@ -299,7 +306,7 @@ namespace SimpleEngine.Classes
                         connections.Add(new CellStruct() { RowIndex = row, ColumnIndex = col });
                 }
 
-                if (cellStruct.ColumnIndex - 1 > 0 && cellStruct.ColumnIndex - 1 <= maxY)
+                if (cellStruct.ColumnIndex - 1 >= 0 && cellStruct.ColumnIndex - 1 < maxColumnValue)
                 {
                     var row = cellStruct.RowIndex;
                     var col = cellStruct.ColumnIndex - 1;
@@ -307,7 +314,7 @@ namespace SimpleEngine.Classes
                         connections.Add(new CellStruct() { RowIndex = row, ColumnIndex = col });
                 }
 
-                if (cellStruct.ColumnIndex + 1 > 0 && cellStruct.ColumnIndex + 1 <= maxY)
+                if (cellStruct.ColumnIndex + 1 >= 0 && cellStruct.ColumnIndex + 1 < maxColumnValue)
                 {
                     var row = cellStruct.RowIndex;
                     var col = cellStruct.ColumnIndex + 1;

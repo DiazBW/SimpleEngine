@@ -7,7 +7,6 @@ namespace SimpleEngine.Interfaces
     public interface IGame
     {
         bool IsPlayerInGame(Int32 playerId);
-        //Boolean IsGameOver;
 
         Int32 GetWinPlayerId();
         List<String> GetBoardTextRepresentation();
