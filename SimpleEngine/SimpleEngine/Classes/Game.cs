@@ -7,7 +7,7 @@ namespace SimpleEngine.Classes
 {
     public class Game : IGame
     {
-        private List<Turn> _history;
+        private readonly List<Turn> _history;
         private const Int32 BOARD_SIZE = 10;
 
         public int ActivePlayerId { get; private set; }
@@ -50,6 +50,17 @@ namespace SimpleEngine.Classes
         public void Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId)
         {
             ValidateTurn(rowIndex, columnIndex, playerId);
+
+            TurnProceed(rowIndex, columnIndex);
+            AddHistoryItem(rowIndex, columnIndex);
+            ChangeActivePlayer();
+
+            RecalculateBoardState();
+        }
+
+        public void DevTurn(Int32 rowIndex, Int32 columnIndex)
+        {
+            //ValidateTurn(rowIndex, columnIndex, playerId);
 
             TurnProceed(rowIndex, columnIndex);
             AddHistoryItem(rowIndex, columnIndex);

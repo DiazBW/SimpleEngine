@@ -13,6 +13,7 @@ namespace SimpleEngine.Interfaces
         List<String> GetBoardTextRepresentation();
         
         void Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId);
+        void DevTurn(Int32 rowIndex, Int32 columnIndex);
 
         void ClearBoard();
     }

@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Classes\Board.cs" />
     <Compile Include="Classes\Game.cs" />
+    <Compile Include="Classes\GameWithShapes.cs" />
     <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Classes\TurnResultCalculator.cs" />
     <Compile Include="Classes\DefaultTurnValidator.cs" />

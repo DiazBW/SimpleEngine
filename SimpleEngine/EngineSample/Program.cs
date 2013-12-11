@@ -6,8 +6,9 @@
 //using System.Text;
 //using System.Threading.Tasks;
 //using SimpleEngine;
-using System.Data;
+//using System.Data;
 using SimpleEngine.Classes;
+using SimpleEngine.Interfaces;
 
 namespace EngineSample
 {
@@ -19,38 +20,38 @@ namespace EngineSample
 
             Int32 playerOneId = 0;
             Int32 playerTwoId = 1;
-            var game = new Game(playerOneId, playerTwoId);
+            var game = new GameWithShapes(playerOneId, playerTwoId);
 
-            ShowGame(game);
-            Console.ReadKey();
-            game.Turn(0, 0, playerOneId);
-            ShowGame(game);
-            Console.ReadKey();
-            game.Turn(1, 1, playerTwoId);
-            ShowGame(game);
-            Console.ReadKey();
-            game.Turn(2, 2, playerOneId);
-            ShowGame(game);
-            Console.ReadKey();
-            game.Turn(3, 3, playerTwoId);
-            ShowGame(game);
-            Console.ReadKey();
+            //ShowGame(game);
+            //Console.ReadKey();
+            //game.Turn(0, 0, playerOneId);
+            //ShowGame(game);
+            //Console.ReadKey();
+            //game.Turn(1, 1, playerTwoId);
+            //ShowGame(game);
+            //Console.ReadKey();
+            //game.Turn(2, 2, playerOneId);
+            //ShowGame(game);
+            //Console.ReadKey();
+            //game.Turn(3, 3, playerTwoId);
+            //ShowGame(game);
+            //Console.ReadKey();
 
-            //ActionCycle(newGame);
+            ActionCycle(game);
         }
 
-        private static void ShowGame(Game game)
+        private static void ShowGame(IGame game)
         {
             var textBoard = game.GetBoardTextRepresentation();
             Console.Clear();
-            //Console.WriteLine("Active player id is " + activePlayerId);
+            //Console.WriteLine("Active player id is " + game.);
             foreach (var line in textBoard)
             {
                 Console.WriteLine(line);
             }
         }
 
-        private static void ActionCycle(Game game)
+        private static void ActionCycle(IGame game)
         {
             var action = String.Empty;
             while (action != "exit")
@@ -62,10 +63,11 @@ namespace EngineSample
                 switch (action)
                 {
                     case "move":
-                        var x = int.Parse(inputArgs[1]);
-                        var y = int.Parse(inputArgs[2]);
-                        var playerId = int.Parse(inputArgs[3]);
-                        game.Turn(y, x, playerId);
+                        var rowIndex = int.Parse(inputArgs[1]);
+                        var columnIndex = int.Parse(inputArgs[2]);
+                        //var playerId = int.Parse(inputArgs[3]);
+                        ///game.Turn(rowIndex, columnIndex, playerId);
+                        game.DevTurn(rowIndex, columnIndex);
                         break;
                     case "clear":
                         game.ClearBoard();
