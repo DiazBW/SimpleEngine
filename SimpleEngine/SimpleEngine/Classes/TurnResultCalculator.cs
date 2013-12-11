@@ -12,7 +12,7 @@ namespace SimpleEngine.Classes
         //TODO: without ref ?
         public void CalculateNewBoardState(ref Board board)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

@@ -6,38 +6,44 @@
 //using System.Text;
 //using System.Threading.Tasks;
 //using SimpleEngine;
+using System.Data;
 using SimpleEngine.Classes;
 
 namespace EngineSample
 {
     class Program
     {
-        private static int activePlayerId;
-
         static void Main(string[] args)
         {
-            activePlayerId = 1;
-
             Console.WriteLine("Current board!");
 
-            var newGame = new Game(playerOneId: 0, playerTwoId: 1);
+            Int32 playerOneId = 0;
+            Int32 playerTwoId = 1;
+            var game = new Game(playerOneId, playerTwoId);
 
-            newGame.SetCellStatus(0, 0, CellType.White, activePlayerId);
-            newGame.SetCellStatus(1, 1, CellType.White, activePlayerId);
-            newGame.SetCellStatus(2, 2, CellType.White, activePlayerId);
-            newGame.SetCellStatus(7, 7, CellType.Black, activePlayerId);
-            newGame.SetCellStatus(8, 8, CellType.Black, activePlayerId);
-            newGame.SetCellStatus(9, 9, CellType.Black, activePlayerId);
+            ShowGame(game);
+            Console.ReadKey();
+            game.Turn(0, 0, playerOneId);
+            ShowGame(game);
+            Console.ReadKey();
+            game.Turn(1, 1, playerTwoId);
+            ShowGame(game);
+            Console.ReadKey();
+            game.Turn(2, 2, playerOneId);
+            ShowGame(game);
+            Console.ReadKey();
+            game.Turn(3, 3, playerTwoId);
+            ShowGame(game);
+            Console.ReadKey();
 
-            ActionCycle(newGame);
-            
+            //ActionCycle(newGame);
         }
 
         private static void ShowGame(Game game)
         {
             var textBoard = game.GetBoardTextRepresentation();
             Console.Clear();
-            Console.WriteLine("Active player id is " + activePlayerId);
+            //Console.WriteLine("Active player id is " + activePlayerId);
             foreach (var line in textBoard)
             {
                 Console.WriteLine(line);
@@ -58,20 +64,11 @@ namespace EngineSample
                     case "move":
                         var x = int.Parse(inputArgs[1]);
                         var y = int.Parse(inputArgs[2]);
-                        var value = inputArgs[3];
-                        if (value == "x")
-                            game.SetCellStatus(x, y, CellType.White, activePlayerId);
-                        if (value == "o")
-                            game.SetCellStatus(x, y, CellType.Black, activePlayerId);
-                        if (value == ".")
-                            game.SetCellStatus(x, y, CellType.Empty, activePlayerId);
+                        var playerId = int.Parse(inputArgs[3]);
+                        game.Turn(y, x, playerId);
                         break;
                     case "clear":
                         game.ClearBoard();
-                        break;
-                    case "player":
-                        activePlayerId = int.Parse(inputArgs[1]);
-
                         break;
                 }
             }

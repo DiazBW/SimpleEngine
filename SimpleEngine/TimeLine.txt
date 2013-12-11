@@ -1,3 +1,4 @@
 2h - initial commit
 2h - GitHub settings with ssh
-45m - refactoring with interfaces and separation.
+1h - refactoring with interfaces and separation.
+1h - turn validator exceptions and few restructuring game class.

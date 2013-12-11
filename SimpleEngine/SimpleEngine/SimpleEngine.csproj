@@ -43,7 +43,7 @@
     <Compile Include="Classes\Game.cs" />
     <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Classes\TurnResultCalculator.cs" />
-    <Compile Include="Classes\DefaultMoveValidator.cs" />
+    <Compile Include="Classes\DefaultTurnValidator.cs" />
     <Compile Include="Interfaces\ITurnResultCalculator.cs" />
     <Compile Include="Interfaces\ITurnValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

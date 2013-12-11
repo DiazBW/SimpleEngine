@@ -9,7 +9,12 @@ namespace SimpleEngine.Classes
     {
         private List<Turn> _history;
         private const Int32 BOARD_SIZE = 10;
-        private Int32 _activePlayerId;
+
+        public int ActivePlayerId { get; private set; }
+        public CellType ActiveCellType
+        {
+            get { return ActivePlayerId == PlayerOneId ? CellType.Black : CellType.White; }
+        }
 
         private readonly ITurnResultCalculator _turnResultCalculator;
         private readonly ITurnValidator _turnValidator;
@@ -22,24 +27,19 @@ namespace SimpleEngine.Classes
         {
             PlayerOneId = playerOneId;
             PlayerTwoId = playerTwoId;
-            _activePlayerId = PlayerOneId;
+            ActivePlayerId = PlayerOneId;
             Board = new Board(BOARD_SIZE);
 
             //TODO: inject via autofac
-            _turnValidator = new DefaultMoveValidator();
+            _turnValidator = new DefaultTurnValidator();
             _turnResultCalculator = new TurnResultCalculator();
             _history = new List<Turn>();
             
         }
 
-        public bool IsPlayerInGame(Int32 playerId)
-        {
-            return PlayerOneId == playerId || PlayerTwoId == playerId;
-        }
-
         public Int32 GetWinPlayerId()
         {
-            throw  new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public bool IsGameOver()
@@ -47,34 +47,37 @@ namespace SimpleEngine.Classes
             throw new NotImplementedException();
         }
 
-        public Int32 GetActivePlayerId()
+        public void Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId)
         {
-            throw new NotImplementedException();
+            ValidateTurn(rowIndex, columnIndex, playerId);
+
+            TurnProceed(rowIndex, columnIndex);
+            AddHistoryItem(rowIndex, columnIndex);
+            ChangeActivePlayer();
+
+            RecalculateBoardState();
         }
 
-        public bool IsPlayerActive(Int32 playerId)
+        private void TurnProceed(Int32 rowIndex, Int32 columnIndex)
         {
-            return _activePlayerId == playerId;
+            Board.Cells[columnIndex, rowIndex] = ActiveCellType;
         }
 
-        public CellType GetActivePlayerCellType()
+        private void AddHistoryItem(int rowIndex, int columnIndex)
         {
-            throw new NotImplementedException();
+            var newTurn = new Turn() { RowIndex = rowIndex, ColumnIndex = columnIndex, PlayerId = ActivePlayerId };
+            _history.Add(newTurn);
         }
 
-        public Int32 Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId)
+        private void ChangeActivePlayer()
+        {
+            ActivePlayerId = ActivePlayerId == PlayerOneId ? PlayerTwoId : PlayerOneId;
+        }
+
+        private void ValidateTurn(int rowIndex, int columnIndex, int playerId)
         {
             PlayerIdValidation(playerId);
-
-            var newCellType = GetActivePlayerCellType();
-            _turnValidator.Validate(rowIndex, columnIndex, newCellType, Board);
-
-            //SetCellStatus
-            //_turnResultCalculator.CalculateNewBoardState(ref Board);
-            // GetAnotherUserId
-            // SaveHistory
-            // var newTurn = new Turn() { RowIndex = rowIndex, ColumnIndex = columnIndex, PlayerId = playerId};
-            return 0;
+            _turnValidator.Validate(rowIndex, columnIndex, ActiveCellType, Board);
         }
 
         private void PlayerIdValidation(int playerId)
@@ -92,31 +95,20 @@ namespace SimpleEngine.Classes
             }
         }
 
-
-        public void SetCellStatus(Int32 x, Int32 y, CellType newStatus, Int32 playerId)
+        public bool IsPlayerInGame(Int32 playerId)
         {
-            _turnValidator.Validate(rowIndex: y, columnIndex: x, newCellValue: newStatus, board: Board);
-
-            //if (!IsCoordinatePairInRange(x, y))
-            //{
-            //    var msg = String.Format("Coordinates {0} {1} are invalid!", x, y);
-            //    throw new ArgumentException(msg);
-            //}
-
-            //if (!Enum.IsDefined(typeof (CellType), newStatus))
-            //{
-            //    var msg = String.Format("Cell status '{0}' is unavailable!", newStatus);
-            //    throw new ArgumentException(msg);
-            //}
-
-            Board.Cells[x, y] = newStatus;
+            return PlayerOneId == playerId || PlayerTwoId == playerId;
         }
 
-        //private static bool IsCoordinatePairInRange(Int32 x, Int32 y)
-        //{
-        //    return (x >= 0 && x < BOARD_SIZE)
-        //           && (y >= 0 && y < BOARD_SIZE);
-        //}
+        public bool IsPlayerActive(Int32 playerId)
+        {
+            return ActivePlayerId == playerId;
+        }
+
+        private void RecalculateBoardState()
+        {
+            _turnResultCalculator.CalculateNewBoardState(ref Board);
+        }
 
         public void ClearBoard()
         {
