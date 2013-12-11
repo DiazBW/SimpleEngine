@@ -3,3 +3,4 @@
 1h - refactoring with interfaces and separation.
 1h - turn validator exceptions and few restructuring game class.
 1h - shapes
+3h - testing sketch GUI application and shapes bugfixes
