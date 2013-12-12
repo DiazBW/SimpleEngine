@@ -86,6 +86,7 @@ namespace SimpleEngine.Classes
             AddHistoryItem(rowIndex, columnIndex);
             ChangeActivePlayer();
 
+            //TODO: move into TurnProcess
             RecalculateBoardState();
         }
 
@@ -193,6 +194,67 @@ namespace SimpleEngine.Classes
             }
         }
 
+        //private void RegenerateShapesAlt(Board board, Int32 rowIndex, Int32 columnIndex, CellType newCellValue)
+        private void RegenerateShapesAlt(Int32 rowIndex, Int32 columnIndex, CellType newCellValue)
+        {
+            List<Int32> shapeIds = GetConnectedShapeIds(rowIndex, columnIndex, newCellValue);
+            MergeShapes(rowIndex, columnIndex, newCellValue, shapeIds);
+            // addPointToNearesShape or create new Shape
+            // try to merge shapes
+            // try to remove shapes
+
+            //Shapes.Clear();
+            for (var i = 0; i < board.Size; i++)
+            {
+                for (var j = 0; j < board.Size; j++)
+                {
+                    var cellValue = board.Cells[i, j];
+                    if (cellValue == CellType.Empty || Shapes.Any(s => s.Contains(rowIndex: i, columnIndex: j)))
+                        continue;
+
+                    var currentCell = new CellStruct() { RowIndex = i, ColumnIndex = j };
+                    var connectedShapeIdx = Shapes.FindIndex(s => s.GetConnectionCells(board.Size, board.Size).Contains(currentCell) && s.CellTypeValue == cellValue);
+                    if (connectedShapeIdx >= 0)
+                    {
+                        Shapes[connectedShapeIdx].Add(currentCell.RowIndex, currentCell.ColumnIndex);
+                    }
+                    else
+                    {
+                        var newShape = new Shape(cellValue);
+                        newShape.Add(currentCell.RowIndex, currentCell.ColumnIndex);
+                        Shapes.Add(newShape);
+                    }
+                }
+            }
+        }
+
+        private void MergeShapes(int rowIndex, int columnIndex, CellType newCellValue, List<Int32> shapeIds)
+        {
+            var newShape = new Shape(newCellValue);
+            var requiredShapes = Shapes.Where(s => shapeIds.Contains(s.Id));
+            foreach (var shape in requiredShapes)
+            {
+                foreach (var cell in shape.Cells)
+                {
+                    newShape.Add(cell.RowIndex, cell.ColumnIndex);
+                }
+            }
+            Shapes.RemoveAll(s => s.);
+        }
+
+        private List<int> GetConnectedShapeIds(int rowIndex, int columnIndex, CellType newCellValue)
+        {
+            var res = new List<int>();
+            for(var i=0; i<Shapes.Count; i++)
+            {
+                if(Shapes[i].IsConnectedWith(rowIndex, columnIndex, newCellValue, BOARD_SIZE)))
+                {
+                    res.Add(i);
+                }
+            }
+            return res;
+        }
+
         public void RemoveWithoutBreath()
         {
             for (var i = 0; i < Shapes.Count; i++)
@@ -254,13 +316,15 @@ namespace SimpleEngine.Classes
 
     public class Shape
     {
+        public Int32 Id { get; private set; }
         public CellType CellTypeValue { get; private set; }
         // Switch to set ?
         public readonly List<CellStruct> Cells;
 
-        public Shape(CellType cellTypeValue)
+        public Shape(CellType cellTypeValue, Int32 id)
         {
             CellTypeValue = cellTypeValue;
+            Id = id;
             Cells = new List<CellStruct>();
         }
 
@@ -284,6 +348,14 @@ namespace SimpleEngine.Classes
         //    var cell = new CellStruct() { x = x, y = y, Value = cellType };
         //    Cells.Remove(cell);
         //}
+
+        public bool IsConnectedWith(int rowIndex, int columnIndex, CellType cellValue, int boardSize)
+        {
+            if (CellTypeValue != cellValue) return false;
+
+            var cells = GetConnectionCells(boardSize, boardSize);
+            return cells.Any(c => c.RowIndex == rowIndex && c.ColumnIndex == columnIndex);
+        }
 
         public List<CellStruct> GetConnectionCells(int maxRowValue, int maxColumnValue)
         {
