@@ -5,3 +5,4 @@
 1h - shapes
 3h - testing sketch GUI application and shapes bugfixes
 1,5h - adding more shapes
+4h - completly remove Board, a lot of refactoring , adding rules for suicide and repeating board state.
