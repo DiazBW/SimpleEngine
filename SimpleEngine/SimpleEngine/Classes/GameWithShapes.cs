@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using SimpleEngine.Interfaces;
 
 namespace SimpleEngine.Classes
@@ -24,7 +25,11 @@ namespace SimpleEngine.Classes
         public readonly Int32 PlayerOneId;
         public readonly Int32 PlayerTwoId;
         public Board Board;
-        public readonly List<Shape> Shapes;
+
+        //public readonly List<Shape> Shapes;
+        public List<Shape> Shapes;
+        private string _prevHashPlayerTwo = String.Empty;
+        private string _prevHashPlayerOne = String.Empty;
 
         public GameWithShapes(Int32 playerOneId, Int32 playerTwoId)
         {
@@ -34,7 +39,7 @@ namespace SimpleEngine.Classes
             Board = new Board(BOARD_SIZE);
 
             //TODO: inject via autofac
-            _turnValidator = new DefaultTurnValidator();
+            _turnValidator = new TurnValidator();
             _turnResultCalculator = new TurnResultCalculator();
             _history = new List<Turn>();
 
@@ -87,26 +92,119 @@ namespace SimpleEngine.Classes
             TurnProceed(rowIndex, columnIndex);
 
             AddHistoryItem(rowIndex, columnIndex);
+
+            SetBoardStateForActiveUser();
+
             ChangeActivePlayer();
             //RecalculateBoardState(rowIndex, columnIndex, ActiveCellType);
         }
 
-        //TODO: remove later
-        public void DevTurn(Int32 rowIndex, Int32 columnIndex)
+        #region Validation
+        /// <exception cref="TurnOutOfRangeException">Trying to turn out of board.</exception>
+        /// <exception cref="TurnToBusyCellException">Trying to turn on not-empty cell.</exception>
+        /// <exception cref="RepeatBoardStateException">Player is trying to turn that brings board to same state as at previous turn.</exception>
+        /// <exception cref="SuicideException">Trying to turn that leads to suicide without attack.</exception>
+        public void Validate(int rowIndex, int columnIndex, CellType newCellValue, Board board, String previousBoardStateHash)
         {
-            throw new NotImplementedException();
+            var turn = new GameTurnStruct()
+            {
+                RowIndex = rowIndex, 
+                ColumnIndex = columnIndex, 
+                Value = newCellValue
+            };
 
+            if (!IsTurnIntoBoard(turn, board.Size))
+            {
+                throw new TurnValidator.TurnOutOfRangeException(rowIndex, columnIndex, newCellValue);
+            }
 
-            if (IsGameOver) return;
-            //ValidateTurn(rowIndex, columnIndex, playerId);
+            if (!IsCellFree(turn, board))
+            {
+                throw new TurnValidator.TurnToBusyCellException(rowIndex, columnIndex, newCellValue);
+            }
 
-            TurnProceed(rowIndex, columnIndex);
-            AddHistoryItem(rowIndex, columnIndex);
-            ChangeActivePlayer();
+            if (IsSuicide(turn, board))
+            {
+                throw new TurnValidator.SuicideException(rowIndex, columnIndex, newCellValue);
+            }
 
-            //TODO: move into TurnProcess
-            //RecalculateBoardState();
+            if (IsBoardStateRepeated(turn, previousBoardStateHash))
+            {
+                throw new TurnValidator.RepeatBoardStateException(rowIndex, columnIndex, newCellValue, previousBoardStateHash);
+            }
         }
+        
+        private Boolean IsTurnIntoBoard(GameTurnStruct turn, Int32 boardSize)
+        {
+            return (turn.RowIndex >= 0 && turn.RowIndex < boardSize)
+                   && (turn.ColumnIndex >= 0 && turn.ColumnIndex < boardSize);
+        }
+
+        private Boolean IsCellFree(GameTurnStruct turn, Board board)
+        {
+            return board.Cells[turn.RowIndex, turn.ColumnIndex] == CellType.Empty;
+        }
+
+        private Boolean IsSuicide(GameTurnStruct turn, Board board)
+        {
+            // Copy state
+            var shapesBeforeStep = DeepCopy(Shapes);
+
+            // Calculate new turn on copy
+            var newShapeId = CreateNewShape(turn.RowIndex, turn.ColumnIndex);
+            MergeNewShapeIfPossible(newShapeId);
+            RemoveWithoutBreathAlt(newShapeId);
+
+            // Get Board Hash
+            //var board = GetBoard();
+            //var newBoardStateHash = board.GetCustomHash();
+            var shapesForRemove = GetShapesWithoutBreath();
+
+            // return state
+            Shapes = shapesBeforeStep;
+
+            return shapesForRemove.Count == 1 && shapesForRemove[0].Contains(turn.RowIndex, turn.ColumnIndex);
+
+            //return newBoardStateHash == previousBoardStateHash;
+
+            //var shapesForRemove = GetShapesWithoutBreath();
+            //return shapesForRemove.Count == 1 && shapesForRemove[0].Contains(turn.RowIndex, turn.ColumnIndex);
+        }
+
+        private Boolean IsBoardStateRepeated(GameTurnStruct turn, String previousBoardStateHash)
+        {
+            // Copy state
+            var shapesBeforeStep = DeepCopy(Shapes);
+
+            // Calculate new turn on copy
+            var newShapeId = CreateNewShape(turn.RowIndex, turn.ColumnIndex);
+            MergeNewShapeIfPossible(newShapeId);
+            RemoveWithoutBreathAlt(newShapeId);
+
+            // Get Board Hash
+            var board = GetBoard();
+            var newBoardStateHash = board.GetCustomHash();
+            
+            // return state
+            Shapes = shapesBeforeStep;
+            return newBoardStateHash == previousBoardStateHash;
+        }
+
+        private List<Shape> DeepCopy(List<Shape> originObject)
+        {
+            var res = new List<Shape>();
+            foreach (var shape in originObject)
+            {
+                var newShape = new Shape(shape.CellTypeValue, shape.Id);
+                foreach (var cell in shape.Cells)
+                {
+                    newShape.Add(cell.RowIndex, cell.ColumnIndex);
+                }
+                res.Add(newShape);
+            }
+            return res;
+        }
+        #endregion Validation
 
         private void TurnProceed(Int32 rowIndex, Int32 columnIndex)
         {
@@ -148,12 +246,25 @@ namespace SimpleEngine.Classes
             MergeShapesInto(newShapeId, connectedShapeIds);
         }
 
+        // TODO: replace with GetShapesWithoutBreath
         private void RemoveWithoutBreathAlt(Int32 ignoredShapeId)
         {
+            //var shapesWithoutBreath = GetShapesWithoutBreath();
+            //shapesWithoutBreath.RemoveAll(s => s.Id == ignoredShapeId);
+            //Shapes.RemoveAll(shape => 
+            //    shape.Id != ignoredShapeId && 
+            //    !HaveShapeBreath(shape)
+            //);
+
             Shapes.RemoveAll(shape => 
                 shape.Id != ignoredShapeId && 
                 !HaveShapeBreath(shape)
             );
+        }
+
+        private List<Shape> GetShapesWithoutBreath()
+        {
+            return Shapes.Where(shape => !HaveShapeBreath(shape)).ToList();
         }
 
         private Int32 CreateNewShape(int rowIndex, int columnIndex)
@@ -181,8 +292,30 @@ namespace SimpleEngine.Classes
         private void ValidateTurn(int rowIndex, int columnIndex, int playerId)
         {
             PlayerIdValidation(playerId);
+            //var board = GetBoard();
+            //_turnValidator.Validate(rowIndex, columnIndex, ActiveCellType, board);
             var board = GetBoard();
-            _turnValidator.Validate(rowIndex, columnIndex, ActiveCellType, board);
+            var previousHash = GetBoardStateForActiveUser();
+            Validate(rowIndex, columnIndex, ActiveCellType, board, previousHash);
+        }
+
+        private string GetBoardStateForActiveUser()
+        {
+            return ActivePlayerId == PlayerOneId ? _prevHashPlayerOne : _prevHashPlayerTwo;
+        }
+
+        //TODO: refactoring _hashes
+        private void SetBoardStateForActiveUser()
+        {
+            var currentHash = GetBoard().GetCustomHash();
+            if (ActivePlayerId == PlayerOneId)
+            {
+                _prevHashPlayerOne = currentHash;
+            }
+            else
+            {
+                _prevHashPlayerTwo = currentHash;
+            }
         }
 
         private void PlayerIdValidation(int playerId)
@@ -547,5 +680,12 @@ namespace SimpleEngine.Classes
     {
         public Int32 RowIndex;
         public Int32 ColumnIndex;
+    }
+
+    public struct GameTurnStruct
+    {
+        public Int32 RowIndex;
+        public Int32 ColumnIndex;
+        public CellType Value;
     }
 }

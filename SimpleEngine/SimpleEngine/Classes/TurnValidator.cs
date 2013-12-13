@@ -8,11 +8,12 @@ using SimpleEngine.Interfaces;
 
 namespace SimpleEngine.Classes
 {
-    internal class DefaultTurnValidator : ITurnValidator
+    internal class TurnValidator : ITurnValidator
     {
         /// <exception cref="TurnOutOfRangeException">Trying to turn out of board.</exception>
         /// <exception cref="TurnToBusyCellException">Trying to turn on not-empty cell.</exception>
-        public void Validate(int rowIndex, int columnIndex, CellType newCellValue, Board board)
+        /// <exception cref="RepeatBoardStateException">Player is trying to turn that brings board to same state as at previous turn.</exception>
+        public void Validate(int rowIndex, int columnIndex, CellType newCellValue, Board board, String previousBoardStateHash)
         {
             if (rowIndex >= board.Size || rowIndex < 0 || columnIndex >= board.Size || columnIndex < 0)
             {
@@ -24,7 +25,13 @@ namespace SimpleEngine.Classes
                 throw new TurnToBusyCellException(rowIndex, columnIndex, newCellValue);
             }
 
+            if (previousBoardStateHash == board.GetCustomHash())
+            {
+                throw new RepeatBoardStateException(rowIndex, columnIndex, newCellValue, previousBoardStateHash);
+            }
+
             //TODO: add check for suicide for areas
+             
         }
 
         public abstract class TurnValidatorException : Exception
@@ -54,6 +61,25 @@ namespace SimpleEngine.Classes
             public TurnToBusyCellException(Int32 rowIndex, Int32 columnIndex, CellType newCellValue)
                 : base(rowIndex, columnIndex, newCellValue)
             {
+            }
+        }
+
+        public class SuicideException : TurnValidatorException
+        {
+            public SuicideException(Int32 rowIndex, Int32 columnIndex, CellType newCellValue)
+                : base(rowIndex, columnIndex, newCellValue)
+            {
+            }
+        }
+
+        public class RepeatBoardStateException : TurnValidatorException
+        {
+            public String PreviousBoardStateHash { get; private set; }
+
+            public RepeatBoardStateException(Int32 rowIndex, Int32 columnIndex, CellType newCellValue, String previousStateHash)
+                : base(rowIndex, columnIndex, newCellValue)
+            {
+                PreviousBoardStateHash = previousStateHash;
             }
         }
     }

@@ -53,27 +53,28 @@ namespace EngineSample
 
         private static void ActionCycle(IGame game)
         {
-            var action = String.Empty;
-            while (action != "exit")
-            {
-                ShowGame(game);
+            throw new NotImplementedException();
+            //var action = String.Empty;
+            //while (action != "exit")
+            //{
+            //    ShowGame(game);
 
-                var inputArgs = Console.ReadLine().Split(' ');
-                action = inputArgs[0];
-                switch (action)
-                {
-                    case "move":
-                        var rowIndex = int.Parse(inputArgs[1]);
-                        var columnIndex = int.Parse(inputArgs[2]);
-                        //var playerId = int.Parse(inputArgs[3]);
-                        ///game.Turn(rowIndex, columnIndex, playerId);
-                        game.DevTurn(rowIndex, columnIndex);
-                        break;
-                    case "clear":
-                        game.ClearBoard();
-                        break;
-                }
-            }
+            //    var inputArgs = Console.ReadLine().Split(' ');
+            //    action = inputArgs[0];
+            //    switch (action)
+            //    {
+            //        case "move":
+            //            var rowIndex = int.Parse(inputArgs[1]);
+            //            var columnIndex = int.Parse(inputArgs[2]);
+            //            //var playerId = int.Parse(inputArgs[3]);
+            //            ///game.Turn(rowIndex, columnIndex, playerId);
+            //            game.DevTurn(rowIndex, columnIndex);
+            //            break;
+            //        case "clear":
+            //            game.ClearBoard();
+            //            break;
+            //    }
+            //}
         }
     }
 }

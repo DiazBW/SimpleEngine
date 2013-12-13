@@ -44,7 +44,7 @@
     <Compile Include="Classes\GameWithShapes.cs" />
     <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Classes\TurnResultCalculator.cs" />
-    <Compile Include="Classes\DefaultTurnValidator.cs" />
+    <Compile Include="Classes\TurnValidator.cs" />
     <Compile Include="Interfaces\ITurnResultCalculator.cs" />
     <Compile Include="Interfaces\ITurnValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

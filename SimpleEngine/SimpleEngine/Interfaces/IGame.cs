@@ -13,7 +13,7 @@ namespace SimpleEngine.Interfaces
         CellType GetCellValue(Int32 rowIndex, Int32 columnIndex);
         
         void Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId);
-        void DevTurn(Int32 rowIndex, Int32 columnIndex);
+        //void DevTurn(Int32 rowIndex, Int32 columnIndex);
 
         void ClearBoard();
     }

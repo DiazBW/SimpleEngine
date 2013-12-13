@@ -1,4 +1,6 @@
-﻿namespace SimpleEngine.Classes
+﻿using System;
+
+namespace SimpleEngine.Classes
 {
     public class Board
     {
@@ -17,6 +19,22 @@
                     Cells[i, j] = DefaultCellType;
                 }
             }
+        }
+
+        //TODO: TESTS! and other equals methods!
+        public String GetCustomHash()
+        {
+            var hash = String.Empty;
+
+            for (int i = 0; i < Size; i++)
+            {
+                for (int j = 0; j < Size; j++)
+                {
+                    hash += Cells[i, j].ToString();
+                }
+            }
+
+            return hash;
         }
     }
 

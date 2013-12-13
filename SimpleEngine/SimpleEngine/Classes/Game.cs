@@ -32,7 +32,7 @@ namespace SimpleEngine.Classes
             Board = new Board(BOARD_SIZE);
 
             //TODO: inject via autofac
-            _turnValidator = new DefaultTurnValidator();
+            _turnValidator = new TurnValidator();
             _turnResultCalculator = new TurnResultCalculator();
             _history = new List<Turn>();
             
@@ -93,8 +93,10 @@ namespace SimpleEngine.Classes
 
         private void ValidateTurn(int rowIndex, int columnIndex, int playerId)
         {
-            PlayerIdValidation(playerId);
-            _turnValidator.Validate(rowIndex, columnIndex, ActiveCellType, Board);
+            throw new NotImplementedException();
+            
+            //PlayerIdValidation(playerId);
+            //_turnValidator.Validate(rowIndex, columnIndex, ActiveCellType, Board);
         }
 
         private void PlayerIdValidation(int playerId)
