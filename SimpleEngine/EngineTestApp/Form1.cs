@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using SimpleEngine.Classes;
 using SimpleEngine.Classes.Game;
-using SimpleEngine.Interfaces;
 
 namespace EngineTestApp
 {
@@ -42,8 +33,6 @@ namespace EngineTestApp
         public MainForm()
         {
             InitializeComponent();
-            //var dir = Path.GetDirectoryName(Application.ExecutablePath);
-            //var filename = Path.Combine(dir, @"MyImage.jpg");
 
             BlackCell = Image.FromFile(@"Content\Images\WhiteCell.png");
             WhiteCell = Image.FromFile(@"Content\Images\WhiteCell.png");
@@ -83,7 +72,6 @@ namespace EngineTestApp
                     newPicBox.SizeMode = PictureBoxSizeMode.StretchImage;
                     newPicBox.Location = new Point(j * cellSize, i * cellSize);
 
-                    //newPicBox.Image = GetImageForCell(i, j, gameSize);
                     newPicBox.Click += Cell_Click;
 
                     boardPanel.Controls.Add(newPicBox);
@@ -94,8 +82,6 @@ namespace EngineTestApp
         void Cell_Click(object sender, EventArgs e)
         {
             var cell = sender as CellPictureBox;
-            //var msg = String.Format("{0} : {1}     {2}", cell.RowIndex, cell.ColumnIndex, cell.CellValue);
-            //MessageBox.Show(msg);
 
             try
             {
@@ -108,9 +94,6 @@ namespace EngineTestApp
             }
 
             ActivePlayerId = ActivePlayerId == PLAYER_ONE_ID ? PLAYER_TWO_ID : PLAYER_ONE_ID;
-
-            //CellType newValue = TheGame.GetCellValue(cell.RowIndex, cell.ColumnIndex);
-            //cell.SetNewValue(newValue);
 
             Board board = TheGame.GetBoard();
 
@@ -128,68 +111,15 @@ namespace EngineTestApp
                             cellPicBox.SetNewValue(newValue);
                         }
                     }
-                    //cell.SetNewValue(newValue);
                 }
             }
-            //throw new NotImplementedException();
         }
-
-        //private static Image GetImageForCell(int i, int j, int gameSize)
-        //{
-        //    // middle
-        //    var resImage = MainForm.EmptyMiddleCell;
-
-        //    // top - left
-        //    if (i == 0 && j == 0)
-        //    {
-        //        resImage = MainForm.EmptyTopLeftCell;
-        //    }
-        //    // top - right
-        //    else if (i == 0 && j == gameSize - 1)
-        //    {
-        //        resImage = MainForm.EmptyTopRightCell;
-        //    }
-        //    // bottom - right
-        //    else if (i == gameSize - 1 && j == gameSize - 1)
-        //    {
-        //        resImage = MainForm.EmptyBottomRightCell;
-        //    }
-        //    // bottom - left
-        //    else if (i == gameSize - 1 && j == 0)
-        //    {
-        //        resImage = MainForm.EmptyBottomLeftCell;
-        //    }
-
-        //    // left border
-        //    else if (i != 0 && i != gameSize - 1 && j == 0)
-        //    {
-        //        resImage = MainForm.EmptyLeftCell;
-        //    }
-        //    // right border
-        //    else if (i != 0 && i != gameSize - 1 && j == gameSize - 1)
-        //    {
-        //        resImage = MainForm.EmptyRightCell;
-        //    }
-        //    // top border
-        //    else if (i == 0 && j != 0 && j != gameSize - 1)
-        //    {
-        //        resImage = MainForm.EmptyTopCell;
-        //    }
-        //    // bottom border
-        //    else if (i == gameSize - 1 && j != 0 && j != gameSize - 1)
-        //    {
-        //        resImage = MainForm.EmptyBottomCell;
-        //    }
-
-        //    return resImage;
-        //}
     }
 
     public class CellPictureBox : PictureBox
     {
         public static Image BlackCell = Image.FromFile(@"Content\Images\BlackCell.png");
         public static Image WhiteCell = Image.FromFile(@"Content\Images\WhiteCell.png");
-        //public static Image EmptyMiddleCell = Image.FromFile(@"Content\Images\MiddleCell.png");
 
         public Int32 RowIndex { get; private set; }
         public Int32 ColumnIndex { get; private set; }
