@@ -95,14 +95,15 @@ namespace EngineTestApp
 
             ActivePlayerId = ActivePlayerId == PLAYER_ONE_ID ? PLAYER_TWO_ID : PLAYER_ONE_ID;
 
-            Board board = TheGame.GetBoard();
+            //Board board = TheGame.GetBoard();
+            //Board board = TheGame.Board;
 
             var gameSize = 19;
             for (var i = 0; i < gameSize; i++)
             {
                 for (var j = 0; j < gameSize; j++)
                 {
-                    CellType newValue = board.Cells[i, j];
+                    CellType newValue = TheGame.Board.Cells[i, j];
                     foreach (var control in this.boardPanel.Controls)
                     {
                         var cellPicBox = control as CellPictureBox;

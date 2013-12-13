@@ -1,52 +1,48 @@
 ﻿using System;
-using SimpleEngine.Classes;
+using SimpleEngine.Classes.Game;
 
 namespace SimpleEngine.Exceptions
 {
-    public abstract class TurnValidatorException : Exception
+    public abstract class TurnValidationException : Exception
     {
-        public int RowIndex { get; private set; }
-        public int ColumnIndex { get; private set; }
-        public CellType CellValue { get; private set; }
+        public GameTurnStruct Turn { get; private set; }
 
-        protected TurnValidatorException(Int32 rowIndex, Int32 columnIndex, CellType newCellValue)
+        protected TurnValidationException(GameTurnStruct turn)
         {
-            RowIndex = rowIndex;
-            ColumnIndex = columnIndex;
-            CellValue = newCellValue;
+            Turn = turn;
         }
     }
 
-    public class TurnOutOfRangeException : TurnValidatorException
+    public class TurnOutOfRangeException : TurnValidationException
     {
-        public TurnOutOfRangeException(Int32 rowIndex, Int32 columnIndex, CellType newCellValue)
-            : base(rowIndex, columnIndex, newCellValue)
+        public TurnOutOfRangeException(GameTurnStruct turn)
+            : base(turn)
         {
         }
     }
 
-    public class TurnToBusyCellException : TurnValidatorException
+    public class TurnToBusyCellException : TurnValidationException
     {
-        public TurnToBusyCellException(Int32 rowIndex, Int32 columnIndex, CellType newCellValue)
-            : base(rowIndex, columnIndex, newCellValue)
+        public TurnToBusyCellException(GameTurnStruct turn)
+            : base(turn)
         {
         }
     }
 
-    public class SuicideException : TurnValidatorException
+    public class SuicideException : TurnValidationException
     {
-        public SuicideException(Int32 rowIndex, Int32 columnIndex, CellType newCellValue)
-            : base(rowIndex, columnIndex, newCellValue)
+        public SuicideException(GameTurnStruct turn)
+            : base(turn)
         {
         }
     }
 
-    public class RepeatBoardStateException : TurnValidatorException
+    public class RepeatBoardStateException : TurnValidationException
     {
         public String PreviousBoardStateHash { get; private set; }
 
-        public RepeatBoardStateException(Int32 rowIndex, Int32 columnIndex, CellType newCellValue, String previousStateHash)
-            : base(rowIndex, columnIndex, newCellValue)
+        public RepeatBoardStateException(GameTurnStruct turn, String previousStateHash)
+            : base(turn)
         {
             PreviousBoardStateHash = previousStateHash;
         }

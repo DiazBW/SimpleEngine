@@ -2,6 +2,7 @@
 
 namespace SimpleEngine.Classes
 {
+    // TODO: add indecsator
     public class Board
     {
         private readonly CellType DefaultCellType = CellType.Empty;

@@ -1,4 +1,5 @@
 ﻿using System;
+using SimpleEngine.Exceptions;
 
 namespace SimpleEngine.Classes.Game
 {
@@ -13,19 +14,21 @@ namespace SimpleEngine.Classes.Game
                 _game = game;
             }
 
-            public void Validation(int playerId)
+            public void Validation(GameTurnStruct turn, int playerId)
             {
                 if (!IsPlayerInGame(playerId))
                 {
-                    var msg = String.Format("The game has not player with id {0}.", playerId);
-                    throw new ArgumentException(msg);
+                    throw new PlayerNotInGameException(playerId, turn);
                 }
 
                 if (!IsPlayerActive(playerId))
                 {
-                    var msg = String.Format("Player with id {0} can not perform turn. Now is another player's turn.",
-                        playerId);
-                    throw new ArgumentException(msg);
+                    throw new PlayerNotActiveException(playerId, turn);
+                }
+
+                if (!IsTurnValueCorrect(turn))
+                {
+                    throw new PlayerInvalidTurnValueException(playerId, turn);
                 }
             }
 
@@ -37,6 +40,11 @@ namespace SimpleEngine.Classes.Game
             private bool IsPlayerActive(Int32 playerId)
             {
                 return _game.ActivePlayerId == playerId;
+            }
+
+            private bool IsTurnValueCorrect(GameTurnStruct turn)
+            {
+                return _game.ActiveCellType == turn.Value;
             }
         }
     }

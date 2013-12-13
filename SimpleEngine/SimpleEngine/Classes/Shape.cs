@@ -18,6 +18,21 @@ namespace SimpleEngine.Classes
             Cells = new List<CellStruct>();
         }
 
+        public static List<Shape> GetDeepCopy(List<Shape> shapes)
+        {
+            return shapes.Select(s => s.GetDeepCopy()).ToList();
+        }
+
+        public Shape GetDeepCopy()
+        {
+            var newShape = new Shape(CellTypeValue, Id);
+            foreach (var cell in Cells)
+            {
+                newShape.Add(cell.RowIndex, cell.ColumnIndex);
+            }
+            return newShape;
+        }
+
         public bool Contains(int rowIndex, int columnIndex)
         {
             return Cells.Any(cell => cell.RowIndex == rowIndex && cell.ColumnIndex == columnIndex);

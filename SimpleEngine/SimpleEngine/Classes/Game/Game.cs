@@ -10,6 +10,9 @@ namespace SimpleEngine.Classes.Game
 
         public Boolean IsGameOver { get; private set; }
 
+        public readonly Int32 PlayerOneId;
+        public readonly Int32 PlayerTwoId;
+
         public Int32 ActivePlayerId { get; private set; }
         public CellType ActiveCellType
         {
@@ -18,11 +21,25 @@ namespace SimpleEngine.Classes.Game
 
         public List<Shape> Shapes;
 
-        public readonly Int32 PlayerOneId;
-        public readonly Int32 PlayerTwoId;
+        public Board Board
+        {
+            get
+            {
+                var board = new Board(BOARD_SIZE);
+                foreach (var shape in Shapes)
+                {
+                    foreach (var cell in shape.Cells)
+                    {
+                        board.Cells[cell.RowIndex, cell.ColumnIndex] = shape.CellTypeValue;
+                    }
+                }
+                return board;
+            }
+        }
 
         private string _previousBoardHashForPlayerOne = String.Empty;
         private string _previousBoardHashForPlayerTwo = String.Empty;
+
         private readonly PlayerValidator _playerValidator;
         private readonly TurnValidator _turnValidator;
 
@@ -33,78 +50,98 @@ namespace SimpleEngine.Classes.Game
             ActivePlayerId = PlayerOneId;
 
             Shapes = new List<Shape>();
+
             _playerValidator = new PlayerValidator(this);
             _turnValidator = new TurnValidator(this);
         }
 
-        public Board GetBoard()
+        private Boolean EmulateTurnAndCheck(GameTurnStruct turn, Func<Boolean> checkFunc)
         {
-            var board = new Board(BOARD_SIZE);
-            foreach (var shape in Shapes)
-            {
-                foreach (var cell in shape.Cells)
-                {
-                    board.Cells[cell.RowIndex, cell.ColumnIndex] = shape.CellTypeValue;
-                }
-            }
-            return board;
+            // Save game state
+            var shapesBeforeStep = Shape.GetDeepCopy(Shapes);
+
+            // Calculate turn 
+            TurnProceed(turn);
+
+            // Run check
+            var checkResult = checkFunc.Invoke();
+
+            // Load game state
+            Shapes = shapesBeforeStep;
+
+            return checkResult;
         }
 
         public void Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId)
         {
+            var turn = new GameTurnStruct()
+            {
+                RowIndex = rowIndex,
+                ColumnIndex = columnIndex,
+                Value = ActiveCellType
+            };
+            Turn(turn, playerId);
+        }
+
+        private void Turn(GameTurnStruct turn, Int32 playerId)
+        {
             if (IsGameOver) return;
 
-            ValidateTurn(rowIndex, columnIndex, playerId);
+            ValidateTurn(turn, playerId);
 
-            TurnProceed(rowIndex, columnIndex);
+            TurnProceed(turn);
 
             SetBoardStateForActiveUser();
 
             ChangeActivePlayer();
         }
 
-        #region Validation
-
-        private List<Shape> DeepCopy(List<Shape> originObject)
+        private void ValidateTurn(GameTurnStruct turn, Int32 playerId)
         {
-            var res = new List<Shape>();
-            foreach (var shape in originObject)
+            _playerValidator.Validation(turn, playerId);
+            var previousHash = GetBoardStateForActiveUser();
+            _turnValidator.Validate(turn, previousHash);
+        }
+
+        private void TurnProceed(GameTurnStruct turn)
+        {
+            if (IsGameOver) return;
+
+            var newShapeId = CreateNewShape(turn);
+            MergeShapesInto(newShapeId, turn);
+            RemoveWithoutBreath(ignoredShapeId: newShapeId);
+        }
+
+        private Int32 CreateNewShape(GameTurnStruct turn)
+        {
+            var newShapeId = GetNewShapeId();
+            var newShape = new Shape(turn.Value, newShapeId);
+            newShape.Add(turn.RowIndex, turn.ColumnIndex);
+
+            Shapes.Add(newShape);
+
+            return newShapeId;
+        }
+
+        private void MergeShapesInto(int shapeId, GameTurnStruct turn)
+        {
+            var shapeForMergeInto = Shapes.FirstOrDefault(s => s.Id == shapeId);
+            var requiredShapes = GetConnectedShapes(turn);
+
+            foreach (var shape in requiredShapes)
             {
-                var newShape = new Shape(shape.CellTypeValue, shape.Id);
                 foreach (var cell in shape.Cells)
                 {
-                    newShape.Add(cell.RowIndex, cell.ColumnIndex);
+                    shapeForMergeInto.Add(cell.RowIndex, cell.ColumnIndex);
                 }
-                res.Add(newShape);
             }
-            return res;
-        }
-        #endregion Validation
 
-        private void TurnProceed(Int32 rowIndex, Int32 columnIndex)
-        {
-            var newShapeId = CreateNewShape(rowIndex, columnIndex);
-
-            MergeNewShapeIfPossible(newShapeId);
-
-            RemoveWithoutBreathAlt(ignoredShapeId : newShapeId);
-        }
-
-        // TODO: chech for new shape existensce
-        // TODO: check for cells count
-        // TODO: search connections interraction ?
-        private void MergeNewShapeIfPossible(int newShapeId)
-        {
-            var newShape = Shapes.FirstOrDefault(s => s.Id == newShapeId);
-            var rowIndex = newShape.Cells[0].RowIndex;
-            var columnIndex = newShape.Cells[0].ColumnIndex;
-
-            List<Int32> connectedShapeIds = GetConnectedShapeIds(rowIndex, columnIndex, ActiveCellType);
-            MergeShapesInto(newShapeId, connectedShapeIds);
+            var shapeForRemoveIds = requiredShapes.Select(s => s.Id);
+            Shapes.RemoveAll(s => shapeForRemoveIds.Contains(s.Id));
         }
 
         // TODO: replace with GetShapesWithoutBreath
-        private void RemoveWithoutBreathAlt(Int32 ignoredShapeId)
+        private void RemoveWithoutBreath(Int32 ignoredShapeId)
         {
             Shapes.RemoveAll(shape => 
                 shape.Id != ignoredShapeId && 
@@ -117,28 +154,9 @@ namespace SimpleEngine.Classes.Game
             return Shapes.Where(shape => !HaveShapeBreath(shape)).ToList();
         }
 
-        private Int32 CreateNewShape(int rowIndex, int columnIndex)
-        {
-            var newShapeId = GetNewShapeId();
-            var newShape = new Shape(ActiveCellType, newShapeId);
-            newShape.Add(rowIndex, columnIndex);
-
-            Shapes.Add(newShape);
-
-            return newShapeId;
-        }
-
         private void ChangeActivePlayer()
         {
             ActivePlayerId = ActivePlayerId == PlayerOneId ? PlayerTwoId : PlayerOneId;
-        }
-
-        private void ValidateTurn(int rowIndex, int columnIndex, int playerId)
-        {
-            _playerValidator.Validation(playerId);
-            var board = GetBoard();
-            var previousHash = GetBoardStateForActiveUser();
-            _turnValidator.Validate(rowIndex, columnIndex, ActiveCellType, board, previousHash);
         }
 
         private string GetBoardStateForActiveUser()
@@ -149,7 +167,7 @@ namespace SimpleEngine.Classes.Game
         //TODO: refactoring _hashes
         private void SetBoardStateForActiveUser()
         {
-            var currentHash = GetBoard().GetCustomHash();
+            var currentHash = Board.GetCustomHash();
             if (ActivePlayerId == PlayerOneId)
             {
                 _previousBoardHashForPlayerTwo = currentHash;
@@ -158,32 +176,6 @@ namespace SimpleEngine.Classes.Game
             {
                 _previousBoardHashForPlayerOne = currentHash;
             }
-        }
-
-        //TODO: clear active player id also
-        public void ClearBoard()
-        {
-            if (IsGameOver) return;
-
-            Shapes.Clear();
-        }
-
-        //TODO: shapeIds.Contains(newShapeId) have to be false! add check
-        //TODO: merge only same cellValue
-        private void MergeShapesInto(int shapeId, List<int> shapesForMergeIds)
-        {
-            //TODO: exception handling
-            var shapeForMergeInto = Shapes.FirstOrDefault(s => s.Id == shapeId);
-            
-            var requiredShapes = Shapes.Where(s => shapesForMergeIds.Contains(s.Id) && s.CellTypeValue == shapeForMergeInto.CellTypeValue);
-            foreach (var shape in requiredShapes)
-            {
-                foreach (var cell in shape.Cells)
-                {
-                    shapeForMergeInto.Add(cell.RowIndex, cell.ColumnIndex);
-                }
-            }
-            Shapes.RemoveAll(s => shapesForMergeIds.Contains(s.Id));
         }
 
         //TODO: change it with something else - cause id just grown.
@@ -196,67 +188,20 @@ namespace SimpleEngine.Classes.Game
             return maxId + 1;
         }
 
-        // TODO: NOT CHECK VALUE! only places
-        private List<int> GetConnectedShapeIds(int rowIndex, int columnIndex, CellType newCellValue)
+        private List<Shape> GetConnectedShapes(GameTurnStruct turn)
         {
-            var res = new List<int>();
-            for(var i=0; i<Shapes.Count; i++)
-            {
-                if(Shapes[i].IsConnectedWith(rowIndex, columnIndex, newCellValue, BOARD_SIZE))
-                {
-                    res.Add(Shapes[i].Id);
-                }
-            }
-            return res;
+            return Shapes.Where(s => s.IsConnectedWith(turn.RowIndex, turn.ColumnIndex, turn.Value, BOARD_SIZE)).ToList();
         }
 
         // TODO: change to linq after tests
         private bool HaveShapeBreath(Shape shape)
         {
             var connections = shape.GetConnectionCells(BOARD_SIZE, BOARD_SIZE);
-            var board = GetBoard();
-            foreach (var connection in connections)
-            {
-
-                if (board.Cells[connection.RowIndex, connection.ColumnIndex] == CellType.Empty)
-                    return true;
-            }
-            return false;
-        }
-
-        public List<String> GetBoardTextRepresentation()
-        {
-            var board = GetBoard();
-            var res = new List<String>();
-            for (var i = 0; i < BOARD_SIZE; i++)
-            {
-                var str = String.Empty;
-                for (var j = 0; j < BOARD_SIZE; j++)
-                {
-                    var ch = String.Empty;
-                    var cellValue = board.Cells[i, j];
-                    var shapeIdx = Shapes.FindIndex(s => s.Contains(rowIndex: i, columnIndex: j)).ToString();
-                    if (shapeIdx == "-1") shapeIdx = "-";
-                    switch (cellValue)
-                    {
-                        case CellType.Empty:
-                            ch = "._" + shapeIdx.ToString();
-                            break;
-                        case CellType.Black:
-                            ch = "o_" + shapeIdx.ToString();
-                            break;
-                        case CellType.White:
-                            ch = "x_" + shapeIdx.ToString();
-                            break;
-                    }
-                    str += ch + "   ";
-                }
-                res.Add(str);
-            }
-            return res;
+            return connections.Any(connection => Board.Cells[connection.RowIndex, connection.ColumnIndex] == CellType.Empty);
         }
     }
 
+    // TODO: вызерать наверное это нафиг
     public struct CellStruct
     {
         public Int32 RowIndex;

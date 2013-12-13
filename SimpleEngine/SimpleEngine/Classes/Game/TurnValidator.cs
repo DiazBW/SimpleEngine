@@ -18,34 +18,26 @@ namespace SimpleEngine.Classes.Game
             /// <exception cref="TurnOutOfRangeException">Trying to turn on not-empty cell.</exception>
             /// <exception cref="TurnToBusyCellException">Player is trying to turn that brings board to same state as at previous turn.</exception>
             /// <exception cref="RepeatBoardStateException">Trying to turn that leads to suicide without attack.</exception>
-            public void Validate(int rowIndex, int columnIndex, CellType newCellValue, Board board,
-                String previousBoardStateHash)
+            public void Validate(GameTurnStruct turn, String previousBoardStateHash)
             {
-                var turn = new GameTurnStruct()
+                if (!IsTurnIntoBoard(turn, _game.Board.Size))
                 {
-                    RowIndex = rowIndex,
-                    ColumnIndex = columnIndex,
-                    Value = newCellValue
-                };
-
-                if (!IsTurnIntoBoard(turn, board.Size))
-                {
-                    throw new TurnOutOfRangeException(rowIndex, columnIndex, newCellValue);
+                    throw new TurnOutOfRangeException(turn);
                 }
 
-                if (!IsCellFree(turn, board))
+                if (!IsCellFree(turn, _game.Board))
                 {
-                    throw new TurnToBusyCellException(rowIndex, columnIndex, newCellValue);
+                    throw new TurnToBusyCellException(turn);
                 }
 
-                if (IsSuicide(turn, board))
+                if (IsSuicide(turn, _game.Board))
                 {
-                    throw new SuicideException(rowIndex, columnIndex, newCellValue);
+                    throw new SuicideException(turn);
                 }
 
                 if (IsBoardStateRepeated(turn, previousBoardStateHash))
                 {
-                    throw new RepeatBoardStateException(rowIndex, columnIndex, newCellValue, previousBoardStateHash);
+                    throw new RepeatBoardStateException(turn, previousBoardStateHash);
                 }
             }
 
@@ -62,47 +54,24 @@ namespace SimpleEngine.Classes.Game
 
             private Boolean IsSuicide(GameTurnStruct turn, Board board)
             {
-                // Copy state
-                var shapesBeforeStep = _game.DeepCopy(_game.Shapes);
+                Func<bool> suicideCheck = () =>
+                {
+                    var shapesForRemove = _game.GetShapesWithoutBreath();
+                    return shapesForRemove.Count == 1 && shapesForRemove[0].Contains(turn.RowIndex, turn.ColumnIndex);
+                };
 
-                // Calculate new turn on copy
-                var newShapeId = _game.CreateNewShape(turn.RowIndex, turn.ColumnIndex);
-                _game.MergeNewShapeIfPossible(newShapeId);
-                _game.RemoveWithoutBreathAlt(newShapeId);
-
-                // Get Board Hash
-                //var board = GetBoard();
-                //var newBoardStateHash = board.GetCustomHash();
-                var shapesForRemove = _game.GetShapesWithoutBreath();
-
-                // return state
-                _game.Shapes = shapesBeforeStep;
-
-                return shapesForRemove.Count == 1 && shapesForRemove[0].Contains(turn.RowIndex, turn.ColumnIndex);
-
-                //return newBoardStateHash == previousBoardStateHash;
-
-                //var shapesForRemove = GetShapesWithoutBreath();
-                //return shapesForRemove.Count == 1 && shapesForRemove[0].Contains(turn.RowIndex, turn.ColumnIndex);
+                return _game.EmulateTurnAndCheck(turn, suicideCheck);
             }
 
             private Boolean IsBoardStateRepeated(GameTurnStruct turn, String previousBoardStateHash)
             {
-                // Copy state
-                var shapesBeforeStep = _game.DeepCopy(_game.Shapes);
+                Func<bool> boardRepeatCheck = () =>
+                {
+                    var newBoardStateHash = _game.Board.GetCustomHash();
+                    return newBoardStateHash == previousBoardStateHash;
+                };
 
-                // Calculate new turn on copy
-                var newShapeId = _game.CreateNewShape(turn.RowIndex, turn.ColumnIndex);
-                _game.MergeNewShapeIfPossible(newShapeId);
-                _game.RemoveWithoutBreathAlt(newShapeId);
-
-                // Get Board Hash
-                var board = _game.GetBoard();
-                var newBoardStateHash = board.GetCustomHash();
-
-                // return state
-                _game.Shapes = shapesBeforeStep;
-                return newBoardStateHash == previousBoardStateHash;
+                return _game.EmulateTurnAndCheck(turn, boardRepeatCheck);
             }
         }
     }
