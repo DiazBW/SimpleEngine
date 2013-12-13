@@ -30,7 +30,7 @@ namespace SimpleEngine.Classes
             {
                 for (int j = 0; j < Size; j++)
                 {
-                    hash += Cells[i, j].ToString();
+                    hash += ((int)Cells[i, j]).ToString();
                 }
             }
 

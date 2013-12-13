@@ -8,6 +8,7 @@
 //using SimpleEngine;
 //using System.Data;
 using SimpleEngine.Classes;
+using SimpleEngine.Classes.Game;
 using SimpleEngine.Interfaces;
 
 namespace EngineSample
@@ -20,7 +21,7 @@ namespace EngineSample
 
             Int32 playerOneId = 0;
             Int32 playerTwoId = 1;
-            var game = new GameWithShapes(playerOneId, playerTwoId);
+            var game = new Game(playerOneId, playerTwoId);
 
             //ShowGame(game);
             //Console.ReadKey();
@@ -40,7 +41,7 @@ namespace EngineSample
             ActionCycle(game);
         }
 
-        private static void ShowGame(IGame game)
+        private static void ShowGame(Game game)
         {
             var textBoard = game.GetBoardTextRepresentation();
             Console.Clear();
@@ -51,7 +52,7 @@ namespace EngineSample
             }
         }
 
-        private static void ActionCycle(IGame game)
+        private static void ActionCycle(Game game)
         {
             throw new NotImplementedException();
             //var action = String.Empty;

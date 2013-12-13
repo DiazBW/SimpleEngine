@@ -40,15 +40,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\Board.cs" />
-    <Compile Include="Classes\Game.cs" />
-    <Compile Include="Classes\GameWithShapes.cs" />
+    <Compile Include="Classes\Game\Game.cs" />
+    <Compile Include="Classes\Game\PlayerValidator.cs" />
+    <Compile Include="Classes\Shape.cs" />
+    <Compile Include="Classes\Game\TurnValidator.cs" />
+    <Compile Include="Exceptions\TurnValidationExceptions.cs" />
     <Compile Include="Interfaces\IGame.cs" />
-    <Compile Include="Classes\TurnResultCalculator.cs" />
-    <Compile Include="Classes\TurnValidator.cs" />
-    <Compile Include="Interfaces\ITurnResultCalculator.cs" />
-    <Compile Include="Interfaces\ITurnValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RulesSketch.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

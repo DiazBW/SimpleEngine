@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SimpleEngine.Classes;
+using SimpleEngine.Classes.Game;
 using SimpleEngine.Interfaces;
 
 namespace EngineTestApp
@@ -32,7 +33,7 @@ namespace EngineTestApp
         public static Image EmptyLeftCell { get; private set; }
         public static Image EmptyBottomCell { get; private set; }
 
-        public IGame TheGame;
+        public Game TheGame;
 
         public const Int32 PLAYER_ONE_ID = 0;
         public const Int32 PLAYER_TWO_ID = 1;
@@ -65,7 +66,7 @@ namespace EngineTestApp
         {
             CreateImages();
 
-            TheGame = new GameWithShapes(PLAYER_ONE_ID, PLAYER_TWO_ID);
+            TheGame = new Game(PLAYER_ONE_ID, PLAYER_TWO_ID);
         }
 
         private void CreateImages(int gameSize = 19)
@@ -111,13 +112,14 @@ namespace EngineTestApp
             //CellType newValue = TheGame.GetCellValue(cell.RowIndex, cell.ColumnIndex);
             //cell.SetNewValue(newValue);
 
+            Board board = TheGame.GetBoard();
+
             var gameSize = 19;
             for (var i = 0; i < gameSize; i++)
             {
                 for (var j = 0; j < gameSize; j++)
                 {
-                    CellType newValue = TheGame.GetCellValue(i, j);
-
+                    CellType newValue = board.Cells[i, j];
                     foreach (var control in this.boardPanel.Controls)
                     {
                         var cellPicBox = control as CellPictureBox;
