@@ -48,7 +48,22 @@ namespace SimpleEngine.Classes
 
         public CellType GetCellValue(Int32 rowIndex, Int32 columnIndex)
         {
-            return Board.Cells[rowIndex, columnIndex];
+            //return Board.Cells[rowIndex, columnIndex];
+            var board = GetBoard();
+            return board.Cells[rowIndex, columnIndex];
+        }
+
+        public Board GetBoard()
+        {
+            var board = new Board(BOARD_SIZE);
+            foreach (var shape in Shapes)
+            {
+                foreach (var cell in shape.Cells)
+                {
+                    board.Cells[cell.RowIndex, cell.ColumnIndex] = shape.CellTypeValue;
+                }
+            }
+            return board;
         }
 
         //public bool IsGameOver()
@@ -70,15 +85,18 @@ namespace SimpleEngine.Classes
             ValidateTurn(rowIndex, columnIndex, playerId);
 
             TurnProceed(rowIndex, columnIndex);
+
             AddHistoryItem(rowIndex, columnIndex);
             ChangeActivePlayer();
-
-            RecalculateBoardState();
+            //RecalculateBoardState(rowIndex, columnIndex, ActiveCellType);
         }
 
         //TODO: remove later
         public void DevTurn(Int32 rowIndex, Int32 columnIndex)
         {
+            throw new NotImplementedException();
+
+
             if (IsGameOver) return;
             //ValidateTurn(rowIndex, columnIndex, playerId);
 
@@ -87,12 +105,66 @@ namespace SimpleEngine.Classes
             ChangeActivePlayer();
 
             //TODO: move into TurnProcess
-            RecalculateBoardState();
+            //RecalculateBoardState();
         }
 
         private void TurnProceed(Int32 rowIndex, Int32 columnIndex)
         {
-            Board.Cells[rowIndex, columnIndex] = ActiveCellType;
+            var newShapeId = CreateNewShape(rowIndex, columnIndex);
+
+            MergeNewShapeIfPossible(newShapeId);
+
+            //TODO: remove duplicated
+            //UpdateBoardByShapes();
+
+            RemoveWithoutBreathAlt(ignoredShapeId : newShapeId);
+
+            //TODO: remove duplicated - refactoring somehow
+            //UpdateBoardByShapes();
+        }
+
+        //private void UpdateBoardByShapes()
+        //{
+        //    ClearBoard();
+        //    foreach (var shape in Shapes)
+        //    {
+        //        foreach (var cell in shape.Cells)
+        //        {
+        //            Board.Cells[cell.RowIndex, cell.ColumnIndex] = shape.CellTypeValue;
+        //        }
+        //    }
+        //}
+
+        // TODO: chech for new shape existensce
+        // TODO: check for cells count
+        // TODO: search connections interraction ?
+        private void MergeNewShapeIfPossible(int newShapeId)
+        {
+            var newShape = Shapes.FirstOrDefault(s => s.Id == newShapeId);
+            var rowIndex = newShape.Cells[0].RowIndex;
+            var columnIndex = newShape.Cells[0].ColumnIndex;
+
+            List<Int32> connectedShapeIds = GetConnectedShapeIds(rowIndex, columnIndex, ActiveCellType);
+            MergeShapesInto(newShapeId, connectedShapeIds);
+        }
+
+        private void RemoveWithoutBreathAlt(Int32 ignoredShapeId)
+        {
+            Shapes.RemoveAll(shape => 
+                shape.Id != ignoredShapeId && 
+                !HaveShapeBreath(shape)
+            );
+        }
+
+        private Int32 CreateNewShape(int rowIndex, int columnIndex)
+        {
+            var newShapeId = GetNewShapeId();
+            var newShape = new Shape(ActiveCellType, newShapeId);
+            newShape.Add(rowIndex, columnIndex);
+
+            Shapes.Add(newShape);
+
+            return newShapeId;
         }
 
         private void AddHistoryItem(int rowIndex, int columnIndex)
@@ -109,7 +181,8 @@ namespace SimpleEngine.Classes
         private void ValidateTurn(int rowIndex, int columnIndex, int playerId)
         {
             PlayerIdValidation(playerId);
-            _turnValidator.Validate(rowIndex, columnIndex, ActiveCellType, Board);
+            var board = GetBoard();
+            _turnValidator.Validate(rowIndex, columnIndex, ActiveCellType, board);
         }
 
         private void PlayerIdValidation(int playerId)
@@ -137,153 +210,225 @@ namespace SimpleEngine.Classes
             return ActivePlayerId == playerId;
         }
 
-        private void RecalculateBoardState()
-        {
-            RegenerateShapes(Board);
-            RemoveWithoutBreath();
-            //_turnResultCalculator.CalculateNewBoardState(ref Board);
+        
+        //private void RecalculateBoardState()
+        //private void RecalculateBoardState(int rowIndex, int colIndex, CellType newCellValue)
+        //{
+        //    RegenerateShapesAlt(rowIndex, colIndex, newCellValue);
+        //    RemoveWithoutBreath();
 
-            ClearBoard();
-            foreach (var shape in Shapes)
-            {
-                foreach (var cell in shape.Cells)
-                {
-                    Board.Cells[cell.RowIndex, cell.ColumnIndex] = shape.CellTypeValue;
-                }
-            }
-        }
+        //    //RegenerateShapes(Board);
+        //    //RemoveWithoutBreath();
+        //    ////_turnResultCalculator.CalculateNewBoardState(ref Board);
+
+        //    //ClearBoard();
+        //    //foreach (var shape in Shapes)
+        //    //{
+        //    //    foreach (var cell in shape.Cells)
+        //    //    {
+        //    //        Board.Cells[cell.RowIndex, cell.ColumnIndex] = shape.CellTypeValue;
+        //    //    }
+        //    //}
+        //}
+
+        //private void RecalculateBoardState()
+        //{
+        //    RegenerateShapes(Board);
+        //    RemoveWithoutBreath();
+        //    //_turnResultCalculator.CalculateNewBoardState(ref Board);
+
+        //    ClearBoard();
+        //    foreach (var shape in Shapes)
+        //    {
+        //        foreach (var cell in shape.Cells)
+        //        {
+        //            Board.Cells[cell.RowIndex, cell.ColumnIndex] = shape.CellTypeValue;
+        //        }
+        //    }
+        //}
+
+        //TODO: clear active player id also
+        //public void ClearBoard()
+        //{
+        //    if (IsGameOver) return;
+
+        //    for (var i = 0; i < BOARD_SIZE; i++)
+        //    {
+        //        for (var j = 0; j < BOARD_SIZE; j++)
+        //        {
+        //            Board.Cells[i, j] = CellType.Empty;
+        //        }
+        //    }
+        //}
 
         //TODO: clear active player id also
         public void ClearBoard()
         {
             if (IsGameOver) return;
 
-            for (var i = 0; i < BOARD_SIZE; i++)
-            {
-                for (var j = 0; j < BOARD_SIZE; j++)
-                {
-                    Board.Cells[i, j] = CellType.Empty;
-                }
-            }
-        }
-
-        private void RegenerateShapes(Board board)
-        {
             Shapes.Clear();
-            for (var i = 0; i < board.Size; i++)
-            {
-                for (var j = 0; j < board.Size; j++)
-                {
-                    var cellValue = board.Cells[i, j];
-                    if (cellValue == CellType.Empty || Shapes.Any(s => s.Contains(rowIndex: i, columnIndex: j)))
-                        continue;
-
-                    var currentCell = new CellStruct() { RowIndex = i, ColumnIndex = j };
-                    var connectedShapeIdx = Shapes.FindIndex(s => s.GetConnectionCells(board.Size, board.Size).Contains(currentCell) && s.CellTypeValue == cellValue);
-                    if (connectedShapeIdx >= 0)
-                    {
-                        Shapes[connectedShapeIdx].Add(currentCell.RowIndex, currentCell.ColumnIndex);
-                    }
-                    else
-                    {
-                        var newShape = new Shape(cellValue);
-                        newShape.Add(currentCell.RowIndex, currentCell.ColumnIndex);
-                        Shapes.Add(newShape);
-                    }
-                }
-            }
+            //for (var i = 0; i < BOARD_SIZE; i++)
+            //{
+            //    for (var j = 0; j < BOARD_SIZE; j++)
+            //    {
+            //        Board.Cells[i, j] = CellType.Empty;
+            //    }
+            //}
         }
+
+        //private void RegenerateShapes(Board board)
+        //{
+        //    Shapes.Clear();
+        //    for (var i = 0; i < board.Size; i++)
+        //    {
+        //        for (var j = 0; j < board.Size; j++)
+        //        {
+        //            var cellValue = board.Cells[i, j];
+        //            if (cellValue == CellType.Empty || Shapes.Any(s => s.Contains(rowIndex: i, columnIndex: j)))
+        //                continue;
+
+        //            var currentCell = new CellStruct() { RowIndex = i, ColumnIndex = j };
+        //            var connectedShapeIdx = Shapes.FindIndex(s => s.GetConnectionCells(board.Size, board.Size).Contains(currentCell) && s.CellTypeValue == cellValue);
+        //            if (connectedShapeIdx >= 0)
+        //            {
+        //                Shapes[connectedShapeIdx].Add(currentCell.RowIndex, currentCell.ColumnIndex);
+        //            }
+        //            else
+        //            {
+        //                var newShapeId = GetNewShapeId();
+        //                var newShape = new Shape(cellValue, newShapeId);
+        //                newShape.Add(currentCell.RowIndex, currentCell.ColumnIndex);
+        //                Shapes.Add(newShape);
+        //            }
+        //        }
+        //    }
+        //}
 
         //private void RegenerateShapesAlt(Board board, Int32 rowIndex, Int32 columnIndex, CellType newCellValue)
-        private void RegenerateShapesAlt(Int32 rowIndex, Int32 columnIndex, CellType newCellValue)
+        //private void RegenerateShapesAlt(Int32 rowIndex, Int32 columnIndex, CellType newCellValue)
+        //{
+        //    var newShapeId = GetNewShapeId();
+        //    var newShape = new Shape(newCellValue, newShapeId);
+        //    newShape.Add(rowIndex, columnIndex);
+        //    Shapes.Add(newShape);
+
+        //    List<Int32> shapeIds = GetConnectedShapeIds(rowIndex, columnIndex, newCellValue);
+        //    MergeShapesInto(newShapeId, shapeIds);
+        //    //MergeShapes(rowIndex, columnIndex, newCellValue, shapeIds);
+            
+        //    //Shapes.Clear();
+        //    //for (var i = 0; i < board.Size; i++)
+        //    //{
+        //    //    for (var j = 0; j < board.Size; j++)
+        //    //    {
+        //    //        var cellValue = board.Cells[i, j];
+        //    //        if (cellValue == CellType.Empty || Shapes.Any(s => s.Contains(rowIndex: i, columnIndex: j)))
+        //    //            continue;
+
+        //    //        var currentCell = new CellStruct() { RowIndex = i, ColumnIndex = j };
+        //    //        var connectedShapeIdx = Shapes.FindIndex(s => s.GetConnectionCells(board.Size, board.Size).Contains(currentCell) && s.CellTypeValue == cellValue);
+        //    //        if (connectedShapeIdx >= 0)
+        //    //        {
+        //    //            Shapes[connectedShapeIdx].Add(currentCell.RowIndex, currentCell.ColumnIndex);
+        //    //        }
+        //    //        else
+        //    //        {
+        //    //            var newShapeId = GetNewShapeId();
+        //    //            var newShape = new Shape(cellValue, newShapeId);
+        //    //            newShape.Add(currentCell.RowIndex, currentCell.ColumnIndex);
+        //    //            Shapes.Add(newShape);
+        //    //        }
+        //    //    }
+        //    //}
+        //}
+
+        //TODO: shapeIds.Contains(newShapeId) have to be false! add check
+        //TODO: merge only same cellValue
+        private void MergeShapesInto(int shapeId, List<int> shapesForMergeIds)
         {
-            List<Int32> shapeIds = GetConnectedShapeIds(rowIndex, columnIndex, newCellValue);
-            MergeShapes(rowIndex, columnIndex, newCellValue, shapeIds);
-            // addPointToNearesShape or create new Shape
-            // try to merge shapes
-            // try to remove shapes
-
-            //Shapes.Clear();
-            for (var i = 0; i < board.Size; i++)
-            {
-                for (var j = 0; j < board.Size; j++)
-                {
-                    var cellValue = board.Cells[i, j];
-                    if (cellValue == CellType.Empty || Shapes.Any(s => s.Contains(rowIndex: i, columnIndex: j)))
-                        continue;
-
-                    var currentCell = new CellStruct() { RowIndex = i, ColumnIndex = j };
-                    var connectedShapeIdx = Shapes.FindIndex(s => s.GetConnectionCells(board.Size, board.Size).Contains(currentCell) && s.CellTypeValue == cellValue);
-                    if (connectedShapeIdx >= 0)
-                    {
-                        Shapes[connectedShapeIdx].Add(currentCell.RowIndex, currentCell.ColumnIndex);
-                    }
-                    else
-                    {
-                        var newShape = new Shape(cellValue);
-                        newShape.Add(currentCell.RowIndex, currentCell.ColumnIndex);
-                        Shapes.Add(newShape);
-                    }
-                }
-            }
-        }
-
-        private void MergeShapes(int rowIndex, int columnIndex, CellType newCellValue, List<Int32> shapeIds)
-        {
-            var newShape = new Shape(newCellValue);
-            var requiredShapes = Shapes.Where(s => shapeIds.Contains(s.Id));
+            //TODO: exception handling
+            var shapeForMergeInto = Shapes.FirstOrDefault(s => s.Id == shapeId);
+            
+            var requiredShapes = Shapes.Where(s => shapesForMergeIds.Contains(s.Id) && s.CellTypeValue == shapeForMergeInto.CellTypeValue);
             foreach (var shape in requiredShapes)
             {
                 foreach (var cell in shape.Cells)
                 {
-                    newShape.Add(cell.RowIndex, cell.ColumnIndex);
+                    shapeForMergeInto.Add(cell.RowIndex, cell.ColumnIndex);
                 }
             }
-            Shapes.RemoveAll(s => s.);
+            Shapes.RemoveAll(s => shapesForMergeIds.Contains(s.Id));
         }
 
+        //private void MergeShapes(int rowIndex, int columnIndex, CellType newCellValue, List<Int32> shapeIds)
+        //private void MergeShapes(Shape sh, List<Int32> shapeIds)
+        //private void MergeShapes(int rowIndex, int columnIndex, CellType newCellValue, List<Int32> shapeIds)
+        //{
+        //    var newShapeId = GetNewShapeId();
+        //    var newShape = new Shape(newCellValue, newShapeId);
+        //    var requiredShapes = Shapes.Where(s => shapeIds.Contains(s.Id));
+        //    foreach (var shape in requiredShapes)
+        //    {
+        //        foreach (var cell in shape.Cells)
+        //        {
+        //            newShape.Add(cell.RowIndex, cell.ColumnIndex);
+        //        }
+        //    }
+        //    Shapes.RemoveAll(s => shapeIds.Contains(s.Id));
+        //}
+
+        //TODO: change it with something else - cause id just grown.
+        private Int32 GetNewShapeId()
+        {
+            if (Shapes.Count <= 0) 
+                return 0;
+
+            Int32 maxId = Shapes.Max(s => s.Id);
+            return maxId + 1;
+        }
+
+        // TODO: NOT CHECK VALUE! only places
         private List<int> GetConnectedShapeIds(int rowIndex, int columnIndex, CellType newCellValue)
         {
             var res = new List<int>();
             for(var i=0; i<Shapes.Count; i++)
             {
-                if(Shapes[i].IsConnectedWith(rowIndex, columnIndex, newCellValue, BOARD_SIZE)))
+                if(Shapes[i].IsConnectedWith(rowIndex, columnIndex, newCellValue, BOARD_SIZE))
                 {
-                    res.Add(i);
+                    res.Add(Shapes[i].Id);
                 }
             }
             return res;
         }
 
-        public void RemoveWithoutBreath()
-        {
-            for (var i = 0; i < Shapes.Count; i++)
-            {
-                if (!HaveShapeBreath(Shapes[i]))
-                {
-                    Shapes.RemoveAt(i);
-                }
-            }
-        }
+        //public void RemoveWithoutBreath()
+        //{
+        //    for (var i = 0; i < Shapes.Count; i++)
+        //    {
+        //        if (!HaveShapeBreath(Shapes[i]))
+        //        {
+        //            Shapes.RemoveAt(i);
+        //        }
+        //    }
+        //}
 
+        // TODO: change to linq after tests
         private bool HaveShapeBreath(Shape shape)
         {
-            //return shape.GetConnectionCells(BOARD_SIZE, BOARD_SIZE).Any(c => c.Value == CellValueType.Empty);
             var connections = shape.GetConnectionCells(BOARD_SIZE, BOARD_SIZE);
+            var board = GetBoard();
             foreach (var connection in connections)
             {
-                if (Board.Cells[connection.RowIndex, connection.ColumnIndex] == CellType.Empty)
+
+                if (board.Cells[connection.RowIndex, connection.ColumnIndex] == CellType.Empty)
                     return true;
             }
             return false;
-
-            // TODO: change after debug
-            //var connections = shape.GetConnectionCells(BOARD_SIZE, BOARD_SIZE);
-            //return connections.Any(connection => Board.Cells[connection.RowIndex, connection.ColumnIndex] == CellType.Empty);
         }
 
         public List<String> GetBoardTextRepresentation()
         {
+            var board = GetBoard();
             var res = new List<String>();
             for (var i = 0; i < BOARD_SIZE; i++)
             {
@@ -291,7 +436,7 @@ namespace SimpleEngine.Classes
                 for (var j = 0; j < BOARD_SIZE; j++)
                 {
                     var ch = String.Empty;
-                    var cellValue = Board.Cells[i, j];
+                    var cellValue = board.Cells[i, j];
                     var shapeIdx = Shapes.FindIndex(s => s.Contains(rowIndex: i, columnIndex: j)).ToString();
                     if (shapeIdx == "-1") shapeIdx = "-";
                     switch (cellValue)

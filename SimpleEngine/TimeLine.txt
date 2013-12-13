@@ -4,3 +4,4 @@
 1h - turn validator exceptions and few restructuring game class.
 1h - shapes
 3h - testing sketch GUI application and shapes bugfixes
+1,5h - adding more shapes
