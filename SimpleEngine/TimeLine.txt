@@ -4,6 +4,6 @@
 1h - turn validator exceptions and few restructuring game class.
 1h - shapes
 3h - testing sketch GUI application and shapes bugfixes
-1,5h - adding more shapes
+2h - adding more shapes
 4h - completly remove Board, a lot of refactoring , adding rules for suicide and repeating board state.
 1h - skip turn, score counter, finish game, autofilling empty board cells
