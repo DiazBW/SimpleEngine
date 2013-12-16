@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Classes\Board.cs" />
     <Compile Include="Classes\Game\Game.cs" />
+    <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Classes\Game\PlayerValidator.cs" />
     <Compile Include="Classes\GameScore.cs" />
     <Compile Include="Classes\Shape.cs" />
@@ -49,9 +50,7 @@
     <Compile Include="Exceptions\TurnValidationExceptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

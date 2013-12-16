@@ -1,9 +1,10 @@
 ﻿using System;
 using SimpleEngine.Exceptions;
+using SimpleEngine.Interfaces;
 
 namespace SimpleEngine.Classes.Game
 {
-    public partial class Game
+    public partial class Game : IGame
     {
         private class TurnValidator
         {

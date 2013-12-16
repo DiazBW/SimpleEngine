@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SimpleEngine.Interfaces;
 
 namespace SimpleEngine.Classes.Game
 {
-    public partial class Game
+    public partial class Game : IGame
     {
         // TODO: remove
         private const Int32 BOARD_SIZE = 19;
