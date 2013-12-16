@@ -6,12 +6,23 @@ namespace SimpleEngine.Classes.Game
 {
     public partial class Game
     {
+        // TODO: remove
         private const Int32 BOARD_SIZE = 19;
 
-        public Boolean IsGameOver { get; private set; }
+        public Boolean IsGameOver
+        {
+            get
+            {
+                return IsPlayerOneSkip && IsPlayerTwoSkip;
+            }
+        }
+
+        public Boolean IsPlayerOneSkip { get; private set; }
+        public Boolean IsPlayerTwoSkip { get; private set; }
 
         public readonly Int32 PlayerOneId;
         public readonly Int32 PlayerTwoId;
+        public readonly GameScore Score;
 
         public Int32 ActivePlayerId { get; private set; }
         public CellType ActiveCellType
@@ -48,6 +59,7 @@ namespace SimpleEngine.Classes.Game
             PlayerOneId = playerOneId;
             PlayerTwoId = playerTwoId;
             ActivePlayerId = PlayerOneId;
+            Score = new GameScore();
 
             Shapes = new List<Shape>();
 
@@ -72,6 +84,59 @@ namespace SimpleEngine.Classes.Game
             return checkResult;
         }
 
+        public void PlayerSkipTurn(Int32 playerId)
+        {
+            if (IsGameOver) return;
+
+            SkipTurnValidation(playerId);
+            SkipTurnProceed();
+        }
+
+        private void SkipTurnValidation(Int32 playerId)
+        {
+            _playerValidator.ValidateTurnSkiping(playerId);
+        }
+
+        private void SkipTurnProceed()
+        {
+            ActivePlayerSkipTurnProceed();
+
+            if (IsGameOver)
+            {
+                FillBoardWithRocksAfterGameFinished();
+                CalculateFinalScore();
+            }
+            else
+            {
+                ChangeActivePlayer();
+            }
+        }
+
+        private void ActivePlayerSkipTurnProceed()
+        {
+            if (ActivePlayerId == PlayerOneId)
+            {
+                IsPlayerOneSkip = true;
+            }
+            else
+            {
+                IsPlayerTwoSkip = true;
+            }
+        }
+
+        private void CalculateFinalScore()
+        {
+            if (!IsGameOver) return;
+
+            Score.GameFinished(Board);
+        }
+
+        private void DropTurnSkipingState()
+        {
+            IsPlayerOneSkip = false;
+            IsPlayerTwoSkip = false;
+        }
+
         public void Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId)
         {
             var turn = new GameTurnStruct()
@@ -91,6 +156,8 @@ namespace SimpleEngine.Classes.Game
 
             TurnProceed(turn);
 
+            DropTurnSkipingState();
+
             SetBoardStateForActiveUser();
 
             ChangeActivePlayer();
@@ -98,7 +165,7 @@ namespace SimpleEngine.Classes.Game
 
         private void ValidateTurn(GameTurnStruct turn, Int32 playerId)
         {
-            _playerValidator.Validation(turn, playerId);
+            _playerValidator.ValidateTurn(turn, playerId);
             var previousHash = GetBoardStateForActiveUser();
             _turnValidator.Validate(turn, previousHash);
         }
@@ -140,14 +207,25 @@ namespace SimpleEngine.Classes.Game
             Shapes.RemoveAll(s => shapeForRemoveIds.Contains(s.Id));
         }
 
-        // TODO: replace with GetShapesWithoutBreath
         private void RemoveWithoutBreath(Int32 ignoredShapeId)
         {
-            Shapes.RemoveAll(shape => 
-                shape.Id != ignoredShapeId && 
-                !HaveShapeBreath(shape)
-            );
+            var shapeForRemove = GetShapesWithoutBreath();
+            shapeForRemove.RemoveAll(s => s.Id == ignoredShapeId);
+
+            shapeForRemove.ForEach(shape => Score.RocksCaptured(shape.Cells.Count, shape.CellTypeValue));
+
+            var idsForRemove = shapeForRemove.Select(s => s.Id);
+            Shapes.RemoveAll(s => idsForRemove.Contains(s.Id));
         }
+
+        // TODO: replace with GetShapesWithoutBreath
+        //private void RemoveWithoutBreath(Int32 ignoredShapeId)
+        //{
+        //    Shapes.RemoveAll(shape => 
+        //        shape.Id != ignoredShapeId && 
+        //        !HaveShapeBreath(shape)
+        //    );
+        //}
 
         private List<Shape> GetShapesWithoutBreath()
         {
@@ -198,6 +276,39 @@ namespace SimpleEngine.Classes.Game
         {
             var connections = shape.GetConnectionCells(BOARD_SIZE, BOARD_SIZE);
             return connections.Any(connection => Board.Cells[connection.RowIndex, connection.ColumnIndex] == CellType.Empty);
+        }
+
+        private void FillBoardWithRocksAfterGameFinished()
+        {
+            if (!IsGameOver) return;
+
+            while (HasBoardEmptyCells())
+            {
+                foreach (var shape in Shapes)
+                {
+                    var connections = shape.GetConnectionCells(Board.Size, Board.Size);
+                    foreach (var conn in connections)
+                    {
+                        if (Board.Cells[conn.RowIndex, conn.ColumnIndex] == CellType.Empty)
+                            shape.Add(conn.RowIndex, conn.ColumnIndex);
+                    }
+                }
+            }
+        }
+
+        //TODO: for / for board.Cell - replace with enumerator.
+        //TODO: board.Cell[] - replace with indexer like Board[i,j].
+        private bool HasBoardEmptyCells()
+        {
+            for (var i = 0; i < Board.Size; i++)
+            {
+                for (var j = 0; j < Board.Size; j++)
+                {
+                    if (Board.Cells[i, j] == CellType.Empty)
+                        return true;
+                }
+            }
+            return false;
         }
     }
 

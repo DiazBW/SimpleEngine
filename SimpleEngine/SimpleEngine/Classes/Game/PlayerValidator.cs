@@ -14,21 +14,34 @@ namespace SimpleEngine.Classes.Game
                 _game = game;
             }
 
-            public void Validation(GameTurnStruct turn, int playerId)
+            public void ValidateTurn(GameTurnStruct turn, int playerId)
             {
                 if (!IsPlayerInGame(playerId))
                 {
-                    throw new PlayerNotInGameException(playerId, turn);
+                    throw new PlayerNotInGameException(playerId);
                 }
 
                 if (!IsPlayerActive(playerId))
                 {
-                    throw new PlayerNotActiveException(playerId, turn);
+                    throw new PlayerNotActiveException(playerId);
                 }
 
                 if (!IsTurnValueCorrect(turn))
                 {
                     throw new PlayerInvalidTurnValueException(playerId, turn);
+                }
+            }
+
+            public void ValidateTurnSkiping(int playerId)
+            {
+                if (!IsPlayerInGame(playerId))
+                {
+                    throw new PlayerNotInGameException(playerId);
+                }
+
+                if (!IsPlayerActive(playerId))
+                {
+                    throw new PlayerNotActiveException(playerId);
                 }
             }
 

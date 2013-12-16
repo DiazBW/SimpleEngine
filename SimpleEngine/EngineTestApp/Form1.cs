@@ -93,11 +93,27 @@ namespace EngineTestApp
                 return;
             }
 
+            ChangeActivePlayer();
+            RefreshBoard();
+        }
+
+        private void MainForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char) Keys.Space)
+            {
+                TheGame.PlayerSkipTurn(ActivePlayerId);
+                ChangeActivePlayer();
+                RefreshBoard();
+            }
+        }
+
+        private void ChangeActivePlayer()
+        {
             ActivePlayerId = ActivePlayerId == PLAYER_ONE_ID ? PLAYER_TWO_ID : PLAYER_ONE_ID;
+        }
 
-            //Board board = TheGame.GetBoard();
-            //Board board = TheGame.Board;
-
+        private void RefreshBoard()
+        {
             var gameSize = 19;
             for (var i = 0; i < gameSize; i++)
             {

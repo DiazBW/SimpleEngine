@@ -6,36 +6,37 @@ namespace SimpleEngine.Exceptions
     public abstract class PlayerValidationException : Exception
     {
         public Int32 PlayerId { get; private set; }
-        public GameTurnStruct Turn { get; private set; }
-
-        protected PlayerValidationException(Int32 playerId, GameTurnStruct turn)
+        
+        protected PlayerValidationException(Int32 playerId)
         {
             PlayerId = playerId;
-            Turn = turn;
         }
     }
 
     public class PlayerNotInGameException : PlayerValidationException
     {
-        public PlayerNotInGameException(Int32 playerId, GameTurnStruct turn)
-            : base(playerId, turn)
+        public PlayerNotInGameException(Int32 playerId)
+            : base(playerId)
         {
         }
     }
 
     public class PlayerNotActiveException : PlayerValidationException
     {
-        public PlayerNotActiveException(Int32 playerId, GameTurnStruct turn)
-            : base(playerId, turn)
+        public PlayerNotActiveException(Int32 playerId)
+            : base(playerId)
         {
         }
     }
 
     public class PlayerInvalidTurnValueException : PlayerValidationException
     {
+        public GameTurnStruct Turn { get; private set; }
+
         public PlayerInvalidTurnValueException(Int32 playerId, GameTurnStruct turn)
-            : base(playerId, turn)
+            : base(playerId)
         {
+            Turn = turn;
         }
     }
 }

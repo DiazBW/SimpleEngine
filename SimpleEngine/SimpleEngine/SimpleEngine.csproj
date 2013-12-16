@@ -42,6 +42,7 @@
     <Compile Include="Classes\Board.cs" />
     <Compile Include="Classes\Game\Game.cs" />
     <Compile Include="Classes\Game\PlayerValidator.cs" />
+    <Compile Include="Classes\GameScore.cs" />
     <Compile Include="Classes\Shape.cs" />
     <Compile Include="Classes\Game\TurnValidator.cs" />
     <Compile Include="Exceptions\PlayerValidationException.cs" />
