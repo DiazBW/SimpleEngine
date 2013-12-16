@@ -130,6 +130,12 @@ namespace EngineTestApp
                     }
                 }
             }
+
+            if(TheGame.IsGameOver)
+            {
+                var msg = String.Format("Game finished with score Black: {0}; White: {1};", TheGame.Score.BlackScore, TheGame.Score.WhiteScore);
+                MessageBox.Show(msg);
+            }
         }
     }
 
