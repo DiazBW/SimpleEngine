@@ -33,6 +33,7 @@ namespace SimpleEngine.Classes.Game
 
         public List<Shape> Shapes;
 
+        //TODO: oprimize!
         public Board Board
         {
             get
@@ -191,6 +192,7 @@ namespace SimpleEngine.Classes.Game
             return newShapeId;
         }
 
+        //TODO: oprimize!
         private void MergeShapesInto(int shapeId, GameTurnStruct turn)
         {
             var shapeForMergeInto = Shapes.FirstOrDefault(s => s.Id == shapeId);
@@ -299,6 +301,7 @@ namespace SimpleEngine.Classes.Game
 
         //TODO: for / for board.Cell - replace with enumerator.
         //TODO: board.Cell[] - replace with indexer like Board[i,j].
+        //TODO: oprimize!
         private bool HasBoardEmptyCells()
         {
             for (var i = 0; i < Board.Size; i++)

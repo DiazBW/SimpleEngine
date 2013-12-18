@@ -105,6 +105,12 @@ namespace EngineTestApp
                 ChangeActivePlayer();
                 RefreshBoard();
             }
+            if (e.KeyChar == (char) Keys.C)
+            {
+                TheGame = new Game(PLAYER_ONE_ID, PLAYER_TWO_ID);
+                ActivePlayerId = TheGame.ActivePlayerId;
+                RefreshBoard();
+            }
         }
 
         private void ChangeActivePlayer()

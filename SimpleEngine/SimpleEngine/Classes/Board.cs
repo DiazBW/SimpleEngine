@@ -9,6 +9,7 @@ namespace SimpleEngine.Classes
         public readonly int Size;
         public CellType[,] Cells;
 
+        //TODO: oprimize!
         public Board(int size)
         {
             Size = size;

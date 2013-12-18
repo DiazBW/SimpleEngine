@@ -11,6 +11,7 @@ namespace SimpleEngine.Classes
         public CellType CellTypeValue { get; private set; }
         public readonly List<CellStruct> Cells;
 
+        //TODO: oprimize ?
         public Shape(CellType cellTypeValue, Int32 id)
         {
             CellTypeValue = cellTypeValue;
@@ -54,6 +55,7 @@ namespace SimpleEngine.Classes
             return cells.Any(c => c.RowIndex == rowIndex && c.ColumnIndex == columnIndex);
         }
 
+        //TODO: oprimize!
         public List<CellStruct> GetConnectionCells(int maxRowValue, int maxColumnValue)
         {
             var connections = new List<CellStruct>();
