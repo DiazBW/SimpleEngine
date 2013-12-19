@@ -1,10 +1,30 @@
-﻿@model MvcApp.Models.BoardModel
+﻿@using System.Web.Optimization
+@model MvcApp.Models.BoardModel
 
 @{
     Layout = null;
 }
 
 <!DOCTYPE html>
+<head><script type="text/javascript" src="~/Scripts/jquery-2.0.3.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery-ui-1.10.3.js"></script>
+    <script type="text/javascript" src="~/Scripts/knockout-3.0.0.js"></script>
+    <script type="text/javascript" src="~/Scripts/knockout.mapping-latest.js"></script>
+    <script type="text/javascript" src="~/Scripts/Custom/Test.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.core.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.resizable.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.selectable.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.accordion.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.autocomplete.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.button.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.dialog.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.slider.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.tabs.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.datepicker.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.progressbar.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.theme.css" />
+</head>
 
 <html>
     <head>
@@ -12,7 +32,8 @@
     </head>
     <body>
         <div>
-              @Model.GetHtml()
+            @Model.GetHtml()
+            @Html.Partial("_Board")
         </div>
     </body>
 </html>
