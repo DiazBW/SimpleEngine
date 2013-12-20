@@ -24,6 +24,8 @@
     <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.datepicker.css" />
     <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.progressbar.css" />
     <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.theme.css" />
+
+    <link rel="stylesheet" type="text/css" href="~/Content/Css/BoardPage.css" />
 </head>
 
 <html>
@@ -33,6 +35,28 @@
     <body>
         <div>
             @Model.GetHtml()
+            
+            <table class="board-table">
+                <thead>
+                    <tr>
+                        <td>
+                            <p>One id: <input data-bind="value: UserOneId" /></p>
+                            <p>Two id: <input data-bind="value: UserTwoId" /></p>
+                            <p>Active id: <input data-bind="value: ActiveUserId" /></p>
+                        </td>
+                        <td>
+                            <p>One: <input data-bind="value: UserOneId" /></p>
+                            <p>Two: <input data-bind="value: UserTwoId" /></p>
+                            <p>Active: <input data-bind="value: ActiveUserId" /></p>
+                            <p>Cell: <input data-bind="value: ActiveCellType"/></p>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+            
+
             @Html.Partial("_Board")
         </div>
     </body>

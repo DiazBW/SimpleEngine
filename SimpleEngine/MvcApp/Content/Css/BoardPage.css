@@ -1,0 +1,22 @@
+﻿.board-table {
+    border: 1px solid black;
+    padding: 10px;
+    margin: 10px;
+}
+
+.board-table td {
+    border: 1px solid black;
+    width: 300px;
+}
+
+.board-table .cell-type-empty td {
+    background-image: url("../Images/MiddleCell.png");
+}
+
+.board-table .cell-type-black td {
+    background-image: url("../Images/BlackCell.png");
+}
+
+.board-table .cell-type-white td {
+    background-image: url("../Images/WhiteCell.png");
+}
