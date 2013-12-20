@@ -8,3 +8,4 @@
 4h - completly remove Board, a lot of refactoring , adding rules for suicide and repeating board state.
 1h - skip turn, score counter, finish game, autofilling empty board cells
 1h - simple almost empty mvc app =)
+15 min - link parser =)
