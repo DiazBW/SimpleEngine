@@ -21,7 +21,7 @@ namespace LinkParser
 
         private static void SaveToFile(string linksTxt, List<string> links)
         {
-            FileInfo outputFile = new FileInfo("linksTxt");
+            FileInfo outputFile = new FileInfo(linksTxt);
             try
             {
                 using (var fs = outputFile.OpenWrite())
