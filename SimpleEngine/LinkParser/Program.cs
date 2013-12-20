@@ -13,16 +13,29 @@ namespace LinkParser
     {
         static void Main(string[] args)
         {
-            var dirName = "FilesWithLinks";
-            var dirInfo = new DirectoryInfo(dirName);
-
+            var dirInfo = new DirectoryInfo("FilesWithLinks");
             var res = ProcessDirsWithInner(dirInfo);
 
-            foreach (var link in res)
+            SaveToFile("Links.txt", res);
+        }
+
+        private static void SaveToFile(string linksTxt, List<string> links)
+        {
+            FileInfo outputFile = new FileInfo("linksTxt");
+            try
             {
-                Console.WriteLine(link);
+                using (var fs = outputFile.OpenWrite())
+                {
+                    using (var writer = new StreamWriter(fs))
+                    {
+                        links.ForEach(line => writer.WriteLine(line));
+                    }
+                }
             }
-            Console.ReadKey();
+            catch (Exception e)
+            {
+                Console.WriteLine("Error with output file " + e.Message);
+            }
         }
 
         private static List<string> ProcessDirsWithInner(DirectoryInfo dirInfo)
