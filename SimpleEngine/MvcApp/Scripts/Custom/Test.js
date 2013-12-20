@@ -1,29 +1,113 @@
 ﻿$(document).ready(function () {
+    
+    var modelInitialData = {
+        PlayerOneId: "11",
+        PlayerTwoId: "13",
+        Rows: 
+        [
+            {
+                RowIndex : 0,
+                Cells:
+                [
+                    {
+                        RowIndex: 0,
+                        ColumnIndex: 0,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 0,
+                        ColumnIndex: 1,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 0,
+                        ColumnIndex: 2,
+                        Value: 0
+                    }
+                ]
+            },
+            {
+                RowIndex : 1,
+                Cells:
+                [
+                    {
+                        RowIndex: 1,
+                        ColumnIndex: 0,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 1,
+                        ColumnIndex: 1,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 1,
+                        ColumnIndex: 2,
+                        Value: 0
+                    }
+                ]
+            },
+            {
+                RowIndex : 2,
+                Cells:
+                [
+                    {
+                        RowIndex: 2,
+                        ColumnIndex: 0,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 2,
+                        ColumnIndex: 1,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 2,
+                        ColumnIndex: 2,
+                        Value: 0
+                    }
+                ]
+            }
+        ]
+    };
+
     var modelJson = {
         UserOneId: "11",
         UserTwoId: "13",
         ActiveUserId: "11",
-        Board : [
-            [1, 2, 0],
-            [0, 1, 0]
-        ]
+        Cells: {
+            Rows : 
+            [
+                { RowIndex: 0, Columns: [1, 2, 0] },
+                { RowIndex: 1, Columns: [0, 2, 1] },
+                { RowIndex: 2, Columns: [2, 0, 0] }
+            ],
+        }
     };
     
-    console.log("Tests");
-    console.log($);
-    
-    function BoardViewModel() {
+    function CellViewModel(value, rowIndex, columnIndex) {
         var self = this;
-        self.UserOneId = ko.observable(1);
-        self.UserTwoId = ko.observable(2);
-        self.ActiveUserId = ko.observable(3);
-        self.Board = ko.observableArray();
+        self.Value = ko.observable(value);
+        self.RowIndex = ko.observable(rowIndex);
+        self.ColumnIndex = ko.observable(columnIndex);
+    }
 
-        self.init = function () {
-            //ko.mapping.fromJS(viewModelJson.json, {}, self.Board);
-            //ko.mapping.fromJS(viewModelJson.json.Board, {}, self.Board);
-            //self.initialized(true);
-        };
+    function RowViewModel(rowInitialData, rowIndex) {
+        var self = this;
+        self.Cells = ko.observableArray(ko.utils.arrayMap(rowInitialData, function (cellData) {
+            return new CellViewModel(cellData.Value, cellData.RowIndex, cellData.ColumnIndex);
+        })),
+        self.RowIndex = ko.observable(rowIndex);
+    }
+
+    function BoardViewModel(rowsInitalData, playerOneId, playerTwoId) {
+        var self = this;
+        self.UserOneId = ko.observable(playerOneId);
+        self.UserTwoId = ko.observable(playerTwoId);
+        self.ActiveUserId = ko.observable(playerOneId);
+        self.Rows = ko.observableArray(ko.utils.arrayMap(rowsInitalData, function (rowData) {
+            return new RowViewModel(rowData.Cells, rowData.RowIndex);
+        })),
         
         self.ActiveCellType = ko.computed(function() {
             var activeCellType = "Empty";
@@ -36,21 +120,21 @@
             return activeCellType;
         });
 
-        self.GetClassForCell = function (i, j) {
-            //var res = self.Board();
-            //console.log(res);
-            //var res = self.Board(0);
-            //console.log(self.Board(0));
-            //var res = self.Board(0, 0);
-            //console.log(self.Board(0, 0));
-            //var res = self.Board([0,0]);
-            //console.log(self.Board([0, 0]));
-
-            var typeValue = self.Board[i, j];
-            return "cell-type-" + self.GetCellTypeText(typeValue);
+        self.CellClicked = function (cellViewModel) {
+            var typeValue = cellViewModel.Value();
+            var newValue = typeValue;
+            if (typeValue == 0) {
+                newValue = 1;
+            } else if (typeValue == 1) {
+                newValue = 2;
+            } else if (typeValue == 2) {
+                newValue = 0;
+            }
+            cellViewModel.Value(newValue);
         };
-        
-        self.GetCellTypeText = function (cellTypeId) {
+
+        self.GetClassForCell = function (cellViewModel) {
+            var cellTypeId = cellViewModel.Value();
             var typeText = "empty";
             if (cellTypeId == 1) {
                 typeText = "black";
@@ -58,11 +142,11 @@
             if (cellTypeId == 2) {
                 typeText = "white";
             }
-            return typeText;
+            return "cell-type-" + typeText;
         };
     }
 
-    var viewModel = new BoardViewModel();
+    var viewModel = new BoardViewModel(modelInitialData.Rows, modelInitialData.PlayerOneId, modelInitialData.PlayerTwoId);
     ko.mapping.fromJS(modelJson, {}, viewModel);
     ko.applyBindings(viewModel);
 });

@@ -1,7 +1,7 @@
 ﻿<table class="board-table">
-    <tbody data-bind="foreach: { data: Board, as: 'row'}">
-        <tr data-bind="foreach: row">
-            <td data-bind="text: $data, css: $root.GetClassForCell(row.$index, $index)"></td>
+    <tbody data-bind="foreach: Rows()">
+        <tr data-bind="foreach: $data.Cells">
+            <td data-bind="css: $root.GetClassForCell($data), click: $root.CellClicked($data)"></td>
         </tr>
     </tbody>
 </table>

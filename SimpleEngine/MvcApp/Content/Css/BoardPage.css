@@ -6,17 +6,24 @@
 
 .board-table td {
     border: 1px solid black;
-    width: 300px;
+    padding: 0;
+    width: 19px;
+    height: 19px; 
+    background-repeat: no-repeat;
+    background-position: center center;
+    text-align: center;
+    vertical-align: top;
+    cursor: pointer;
 }
 
-.board-table .cell-type-empty td {
+.board-table .cell-type-empty {
     background-image: url("../Images/MiddleCell.png");
 }
 
-.board-table .cell-type-black td {
+.board-table .cell-type-black {
     background-image: url("../Images/BlackCell.png");
 }
 
-.board-table .cell-type-white td {
+.board-table .cell-type-white {
     background-image: url("../Images/WhiteCell.png");
 }
