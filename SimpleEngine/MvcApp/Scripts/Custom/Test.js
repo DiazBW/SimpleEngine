@@ -1,76 +1,4 @@
 ﻿$(document).ready(function () {
-    
-    var modelInitialData = {
-        PlayerOneId: "11",
-        PlayerTwoId: "13",
-        Rows: 
-        [
-            {
-                RowIndex : 0,
-                Cells:
-                [
-                    {
-                        RowIndex: 0,
-                        ColumnIndex: 0,
-                        Value: 0
-                    },
-                    {
-                        RowIndex: 0,
-                        ColumnIndex: 1,
-                        Value: 0
-                    },
-                    {
-                        RowIndex: 0,
-                        ColumnIndex: 2,
-                        Value: 0
-                    }
-                ]
-            },
-            {
-                RowIndex : 1,
-                Cells:
-                [
-                    {
-                        RowIndex: 1,
-                        ColumnIndex: 0,
-                        Value: 0
-                    },
-                    {
-                        RowIndex: 1,
-                        ColumnIndex: 1,
-                        Value: 0
-                    },
-                    {
-                        RowIndex: 1,
-                        ColumnIndex: 2,
-                        Value: 0
-                    }
-                ]
-            },
-            {
-                RowIndex : 2,
-                Cells:
-                [
-                    {
-                        RowIndex: 2,
-                        ColumnIndex: 0,
-                        Value: 0
-                    },
-                    {
-                        RowIndex: 2,
-                        ColumnIndex: 1,
-                        Value: 0
-                    },
-                    {
-                        RowIndex: 2,
-                        ColumnIndex: 2,
-                        Value: 0
-                    }
-                ]
-            }
-        ]
-    };
-
     var modelJson = {
         UserOneId: "11",
         UserTwoId: "13",
@@ -144,7 +72,221 @@
             }
             return "cell-type-" + typeText;
         };
+        
+        self.SaveGame = function () {
+            //$.getJSON("/Test/AjaxSave/")
+            //    .done(function() {
+            //        console.log("Save ajax done!");
+            //    })
+            //    .fail(function() {
+            //        console.log("Save ajax failed!");
+            //    });
+            
+            $.post("/Test/AjaxSave/")
+            .done(function(data) {
+                console.log("Save ajax done!");
+            })
+            .fail(function() {
+                console.log("Save ajax failed!");
+            });
+        };
+        
+        self.LoadGame = function () {
+            //$.getJSON("/Test/AjaxLoad/")
+            //    .done(function () {
+            //        console.log("Load ajax done!");
+            //    })
+            //    .fail(function () {
+            //        console.log("Save ajax failed!");
+            //    });
+            
+            //var jsonData = ko.toJSON(viewModel);
+            //var plainJs = ko.toJS(viewModel);
+
+            
+
+            $.post("/Test/AjaxLoad/")
+            .done(function (data) {
+                var someJSON = data;
+                var parsed = JSON.parse(someJSON);
+ 
+                // Update view model properties
+                //self..firstName(parsed.firstName);
+                //viewModel.pets(parsed.pets);
+                
+                //ko.mapping.fromJS(someJSON, {}, self);
+                self = ko.mapping.fromJS(parsed);
+
+                console.log("Load ajax done!");
+            })
+            .fail(function () {
+                console.log("Save ajax failed!");
+            });
+        };
     }
+
+    var modelInitialData = {
+        PlayerOneId: "11",
+        PlayerTwoId: "13",
+        Rows:
+        [
+            {
+                RowIndex: 0,
+                Cells:
+                [
+                    {
+                        RowIndex: 0,
+                        ColumnIndex: 0,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 0,
+                        ColumnIndex: 1,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 0,
+                        ColumnIndex: 2,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 0,
+                        ColumnIndex: 3,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 0,
+                        ColumnIndex: 4,
+                        Value: 0
+                    }
+                ]
+            },
+            {
+                RowIndex: 1,
+                Cells:
+                [
+                    {
+                        RowIndex: 1,
+                        ColumnIndex: 0,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 1,
+                        ColumnIndex: 1,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 1,
+                        ColumnIndex: 2,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 1,
+                        ColumnIndex: 3,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 1,
+                        ColumnIndex: 4,
+                        Value: 0
+                    }
+                ]
+            },
+            {
+                RowIndex: 2,
+                Cells:
+                [
+                    {
+                        RowIndex: 2,
+                        ColumnIndex: 0,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 2,
+                        ColumnIndex: 1,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 2,
+                        ColumnIndex: 2,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 2,
+                        ColumnIndex: 3,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 2,
+                        ColumnIndex: 4,
+                        Value: 0
+                    }
+                ]
+            },
+            {
+                RowIndex: 3,
+                Cells:
+                [
+                    {
+                        RowIndex: 3,
+                        ColumnIndex: 0,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 3,
+                        ColumnIndex: 1,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 3,
+                        ColumnIndex: 2,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 3,
+                        ColumnIndex: 3,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 3,
+                        ColumnIndex: 4,
+                        Value: 0
+                    }
+                ]
+            },
+            {
+                RowIndex: 4,
+                Cells:
+                [
+                    {
+                        RowIndex: 4,
+                        ColumnIndex: 0,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 4,
+                        ColumnIndex: 1,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 4,
+                        ColumnIndex: 2,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 4,
+                        ColumnIndex: 3,
+                        Value: 0
+                    },
+                    {
+                        RowIndex: 4,
+                        ColumnIndex: 4,
+                        Value: 0
+                    }
+                ]
+            }
+        ]
+    };
 
     var viewModel = new BoardViewModel(modelInitialData.Rows, modelInitialData.PlayerOneId, modelInitialData.PlayerTwoId);
     ko.mapping.fromJS(modelJson, {}, viewModel);

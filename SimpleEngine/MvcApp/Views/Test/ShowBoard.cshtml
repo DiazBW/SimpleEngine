@@ -6,7 +6,8 @@
 }
 
 <!DOCTYPE html>
-<head><script type="text/javascript" src="~/Scripts/jquery-2.0.3.js"></script>
+
+    <script type="text/javascript" src="~/Scripts/jquery-2.0.3.js"></script>
     <script type="text/javascript" src="~/Scripts/jquery-ui-1.10.3.js"></script>
     <script type="text/javascript" src="~/Scripts/knockout-3.0.0.js"></script>
     <script type="text/javascript" src="~/Scripts/knockout.mapping-latest.js"></script>
@@ -26,7 +27,6 @@
     <link rel="stylesheet" type="text/css" href="~/Content/themes/base/jquery.ui.theme.css" />
 
     <link rel="stylesheet" type="text/css" href="~/Content/Css/BoardPage.css" />
-</head>
 
 <html>
     <head>
@@ -34,8 +34,6 @@
     </head>
     <body>
         <div>
-            @Model.GetHtml()
-            
             <table class="board-table">
                 <thead>
                     <tr>
@@ -51,6 +49,8 @@
                             <p>Cell: <input data-bind="value: ActiveCellType"/></p>
                         </td>
                         <td>
+                            <input type="button" data-bind="click: SaveGame" value="Save" />
+                            <input type="button" data-bind="click: LoadGame" value="Load" />
                         </td>
                     </tr>
                 </thead>
