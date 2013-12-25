@@ -1,0 +1,35 @@
+﻿@model MvcApp.Models.User.CreateUserModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>UserCreation</title>
+    </head>
+    <body>
+        <div>
+            @using (Html.BeginForm("CreateUser", "Test", FormMethod.Post))
+            {
+                <div>
+                    @Html.ValidationSummary(true)
+                    @Html.AntiForgeryToken()
+                </div>
+                <div>
+                    @Html.TextBoxFor(m => m.Username)
+                    @Html.TextBoxFor(m => m.Password)
+                    @Html.TextBoxFor(m => m.Email)
+                    @Html.TextBoxFor(m => m.Msg)
+                    <span>
+                        <input type="submit" value="CreateUser" />
+                    </span>
+                </div>
+                <div id="test-res">
+                </div>
+            }
+        </div>
+    </body>
+</html>

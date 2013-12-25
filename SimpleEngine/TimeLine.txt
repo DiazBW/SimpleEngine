@@ -11,3 +11,6 @@
 15 min - link parser =)
 1h - knockout simple model
 1.5h - loading/saving knockout model (js side)
+
+	1h - Asp.net identity
+	2h - EF connection, and UoW

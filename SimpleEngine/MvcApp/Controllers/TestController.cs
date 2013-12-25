@@ -6,9 +6,14 @@ using System.Text;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using MvcApp.EfDataModels;
 using MvcApp.Models;
+using MvcApp.Models.User;
+using MvcApp.UoW;
 using Newtonsoft.Json;
-using SimpleEngine.Classes.Game;
+using Game = SimpleEngine.Classes.Game.Game;
 
 namespace MvcApp.Controllers
 {
@@ -49,6 +54,24 @@ namespace MvcApp.Controllers
 
         public JsonResult AjaxSave(GameModel model)
         {
+            //EfDataModels.GameModelContainer container = new GameModelContainer();
+            
+            //EfDataModels.Game game = new EfDataModels.Game();
+            //game.ActivePlayerId = model.ActivePlayerId;
+            //game.PlayerOneId = model.PlayerOneId;
+            //game.PlayerTwoId = model.PlayerTwoId;
+
+            //JsonSerializerSettings settings = new JsonSerializerSettings();
+            //var jsonModel = JsonConvert.SerializeObject(model);
+            //game.Json = jsonModel;
+            
+
+            //container.SaveChanges();
+
+            var uow = new UnitOfWork(new GameModelContainer());
+            GameService service = new GameService(uow);
+            service.SaveGame(model);
+
             return Json("OK");
         }
 
@@ -73,6 +96,47 @@ namespace MvcApp.Controllers
             //return res;
         }
 
+        [HttpGet]
+        public ActionResult CreateUser()
+        {
+            var model = new CreateUserModel
+            {
+                Username = "name",
+                Password = "pass",
+                Email = "mail",
+                Msg = "message"
+            };
+            return View("CreateUserModel", model);
+        }
+
+        [HttpPost]
+        public ActionResult CreateUser(CreateUserModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                //EfDataModels.Game game = new EfDataModels.Game();
+                //game.ActivePlayerId = model.
+
+
+                // Default UserStore constructor uses the default connection string named: DefaultConnection
+                //var userStore = new UserStore<IdentityUser>();
+                //var manager = new UserManager<IdentityUser>(userStore);
+
+                //var user = new IdentityUser() { UserName = model.Username };
+                //IdentityResult result = manager.Create(user, model.Password );
+
+                //if (result.Succeeded)
+                //{
+                //    model.Msg = string.Format("User {0} was created successfully!", user.UserName);
+                //}
+                //else
+                //{
+                //    model.Msg = result.Errors.FirstOrDefault();
+                //}
+            }
+            return View("CreateUserModel", model);
+        }
+
 
         //var settings = new JsonSerializerSettings()
         //{
@@ -82,3 +146,121 @@ namespace MvcApp.Controllers
         //var domExercise = JsonConvert.DeserializeObject<DomExercise>(exercise.EditorViewJson, settings);
     }
 }
+
+
+//using Microsoft.AspNet.Identity;
+//using Microsoft.AspNet.Identity.EntityFramework;
+//using System;
+//using System.Linq;
+
+//namespace WebFormsIdentity
+//{
+//   public partial class Register : System.Web.UI.Page
+//   {
+//      protected void CreateUser_Click(object sender, EventArgs e)
+//      {
+//         // Default UserStore constructor uses the default connection string named: DefaultConnection
+//         var userStore = new UserStore<IdentityUser>();
+//         var manager = new UserManager<IdentityUser>(userStore);
+
+//         var user = new IdentityUser() { UserName = UserName.Text };
+//         IdentityResult result = manager.Create(user, Password.Text);
+
+//         if (result.Succeeded)
+//         {
+//            StatusMessage.Text = string.Format("User {0} was created successfully!", user.UserName);
+//         }
+//         else
+//         {
+//            StatusMessage.Text = result.Errors.FirstOrDefault();
+//         }
+//      }
+//   }
+//}
+
+// ------------------------------------------------------------------------------------
+
+//public partial class Register : System.Web.UI.Page
+//{
+//    protected void CreateUser_Click(object sender, EventArgs e)
+//    {
+//        // Default UserStore constructor uses the default connection string named: DefaultConnection
+//        var userStore = new UserStore<IdentityUser>();
+//        var manager = new UserManager<IdentityUser>(userStore);
+//        var user = new IdentityUser() { UserName = UserName.Text };
+
+//        IdentityResult result = manager.Create(user, Password.Text);
+
+//        if (result.Succeeded)
+//        {
+//            var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
+//            var userIdentity = manager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+//            authenticationManager.SignIn(new AuthenticationProperties() { }, userIdentity);
+//            Response.Redirect("~/Login.aspx");
+//        }
+//        else
+//        {
+//            StatusMessage.Text = result.Errors.FirstOrDefault();
+//        }
+//    }
+//}
+
+// ----------------------------------------------------------------------------------------
+
+//using Microsoft.AspNet.Identity;
+//using Microsoft.AspNet.Identity.EntityFramework;
+//using Microsoft.Owin.Security;
+//using System;
+//using System.Web;
+//using System.Web.UI.WebControls;
+
+//namespace WebFormsIdentity
+//{
+//   public partial class Login : System.Web.UI.Page
+//   {
+//      protected void Page_Load(object sender, EventArgs e)
+//      {
+//         if (!IsPostBack)
+//         {
+//            if (User.Identity.IsAuthenticated)
+//            {
+//               StatusText.Text = string.Format("Hello {0}!!", User.Identity.GetUserName());
+//               LoginStatus.Visible = true;
+//               LogoutButton.Visible = true;
+//            }
+//            else
+//            {
+//               LoginForm.Visible = true;
+//            }
+//         }
+//      }
+
+//      protected void SignIn(object sender, EventArgs e)
+//      {
+//         var userStore = new UserStore<IdentityUser>();
+//         var userManager = new UserManager<IdentityUser>(userStore);
+//         var user = userManager.Find(UserName.Text, Password.Text);
+
+//         if (user != null)
+//         {
+//            var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
+//            var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+
+//            authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, userIdentity);
+//            Response.Redirect("~/Login.aspx");
+//         }
+//         else
+//         {
+//            StatusText.Text = "Invalid username or password.";
+//            LoginStatus.Visible = true;
+//         }
+//      }
+
+//      protected void SignOut(object sender, EventArgs e)
+//      {
+//         var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
+//         authenticationManager.SignOut();
+//         Response.Redirect("~/Login.aspx");
+//      }
+//   }
+//}

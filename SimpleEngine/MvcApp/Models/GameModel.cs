@@ -6,12 +6,9 @@ using Newtonsoft.Json;
 
 namespace MvcApp.Models
 {
-    //[JsonObject(MemberSerialization.Fields)]
     public class GameModel
     {
-        //[JsonProperty]
         public Int32 PlayerOneId { get; set; }
-        //[JsonProperty("PlayerTwoId")]
         public Int32 PlayerTwoId { get; set; }
         public Int32 ActivePlayerId { get; set; }
 
@@ -40,7 +37,6 @@ namespace MvcApp.Models
         }
     }
 
-    //[JsonObject(MemberSerialization.Fields)]
     public class CellRow
     {
         public Int32 RowIndex { get; set; }
@@ -48,7 +44,6 @@ namespace MvcApp.Models
         public List<Cell> Cells { get; set; }
     }
 
-    //[JsonObject(MemberSerialization.Fields)]
     public class Cell
     {
         public Int32 RowIndex { get; set; }
