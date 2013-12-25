@@ -10,3 +10,4 @@
 1h - simple almost empty mvc app =)
 15 min - link parser =)
 1h - knockout simple model
+1.5h - loading/saving knockout model (js side)

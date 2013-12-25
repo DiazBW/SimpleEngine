@@ -47,9 +47,9 @@ namespace MvcApp.Controllers
             return View(model);
         }
 
-        public JsonResult AjaxSave()
+        public JsonResult AjaxSave(GameModel model)
         {
-            return Json("");
+            return Json("OK");
         }
 
         public ActionResult AjaxLoad()

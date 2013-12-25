@@ -1,6 +1,6 @@
 ﻿<table class="board-table">
     <tbody data-bind="foreach: Rows()">
-        <tr data-bind="foreach: $data.Cells">
+        <tr data-bind="foreach: $data.Cells()">
             <td data-bind="css: $root.GetClassForCell($data), click: $root.CellClicked($data)"></td>
         </tr>
     </tbody>

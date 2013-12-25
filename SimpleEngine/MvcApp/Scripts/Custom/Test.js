@@ -13,25 +13,47 @@
         }
     };
     
+    // maybe switch to ko.mapping
     function CellViewModel(value, rowIndex, columnIndex) {
         var self = this;
         self.Value = ko.observable(value);
         self.RowIndex = ko.observable(rowIndex);
         self.ColumnIndex = ko.observable(columnIndex);
+
+        self.GetJS = function() {
+            return {
+                Value: self.Value(),
+                RowIndex: self.RowIndex(),
+                ColumnIndex: self.ColumnIndex()
+            };
+        };
     }
 
-    function RowViewModel(rowInitialData, rowIndex) {
+    function RowViewModel(cellObjectList, rowIndex) {
         var self = this;
-        self.Cells = ko.observableArray(ko.utils.arrayMap(rowInitialData, function (cellData) {
+        self.Cells = ko.observableArray(ko.utils.arrayMap(cellObjectList, function (cellData) {
             return new CellViewModel(cellData.Value, cellData.RowIndex, cellData.ColumnIndex);
         })),
         self.RowIndex = ko.observable(rowIndex);
+        
+        self.GetJS = function () {
+            var cells = [];
+            for (var index in self.Cells()) {
+                var cellJs = self.Cells()[index].GetJS();
+                cells.push(cellJs);
+            }
+            return {
+                Cells: cells,
+                RowIndex: self.RowIndex()
+            };
+        };
     }
 
     function BoardViewModel(rowsInitalData, playerOneId, playerTwoId) {
         var self = this;
-        self.UserOneId = ko.observable(playerOneId);
-        self.UserTwoId = ko.observable(playerTwoId);
+        self.defData = rowsInitalData;
+        self.PlayerOneId = ko.observable(playerOneId);
+        self.PlayerTwoId = ko.observable(playerTwoId);
         self.ActiveUserId = ko.observable(playerOneId);
         self.Rows = ko.observableArray(ko.utils.arrayMap(rowsInitalData, function (rowData) {
             return new RowViewModel(rowData.Cells, rowData.RowIndex);
@@ -39,7 +61,7 @@
         
         self.ActiveCellType = ko.computed(function() {
             var activeCellType = "Empty";
-            if (self.ActiveUserId() == self.UserOneId()) {
+            if (self.ActiveUserId() == self.PlayerOneId()) {
                 activeCellType = "Black";
             } else {
                 activeCellType = "White";
@@ -74,54 +96,60 @@
         };
         
         self.SaveGame = function () {
-            //$.getJSON("/Test/AjaxSave/")
-            //    .done(function() {
-            //        console.log("Save ajax done!");
-            //    })
-            //    .fail(function() {
-            //        console.log("Save ajax failed!");
-            //    });
+            var unmappedModel = self.GetJS();
+            var jsonForSave = JSON.stringify(unmappedModel, null, 2);
             
-            $.post("/Test/AjaxSave/")
-            .done(function(data) {
-                console.log("Save ajax done!");
-            })
-            .fail(function() {
-                console.log("Save ajax failed!");
+            $.ajax({
+                url: '/Test/AjaxSave',
+                type: 'POST',
+                dataType: 'json',
+                data: jsonForSave,
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    // TODO: error handling
+                    console.log(data);
+                },
+                error: function (data) {
+                    console.log(data);
+                }
             });
         };
-        
+
         self.LoadGame = function () {
-            //$.getJSON("/Test/AjaxLoad/")
-            //    .done(function () {
-            //        console.log("Load ajax done!");
-            //    })
-            //    .fail(function () {
-            //        console.log("Save ajax failed!");
-            //    });
-            
-            //var jsonData = ko.toJSON(viewModel);
-            //var plainJs = ko.toJS(viewModel);
-
-            
-
             $.post("/Test/AjaxLoad/")
-            .done(function (data) {
-                var someJSON = data;
-                var parsed = JSON.parse(someJSON);
- 
-                // Update view model properties
-                //self..firstName(parsed.firstName);
-                //viewModel.pets(parsed.pets);
-                
+            .done(function (jsonData) {
                 //ko.mapping.fromJS(someJSON, {}, self);
-                self = ko.mapping.fromJS(parsed);
-
+                var jsData = JSON.parse(jsonData);
+                
+                self.PlayerOneId(jsData.PlayerOneId)
+                self.PlayerTwoId(jsData.PlayerTwoId);
+                self.ActiveUserId(jsData.ActivePlayerId);
+                
+                self.Rows.removeAll();
+                for (var index in jsData.Rows) {
+                    var cells = jsData.Rows[index].Cells;
+                    var rowIndex = jsData.Rows[index].RowIndex;
+                    self.Rows.push(new RowViewModel(cells, rowIndex));
+                }
                 console.log("Load ajax done!");
             })
             .fail(function () {
                 console.log("Save ajax failed!");
             });
+        };
+
+        self.GetJS = function () {
+            var rows = [];
+            for (var index in self.Rows()) {
+                var rowJs = self.Rows()[index].GetJS();
+                rows.push(rowJs);
+            }
+            return {
+                Rows: rows,
+                PlayerOneId: self.PlayerOneId(),
+                PlayerTwoId: self.PlayerTwoId(),
+                ActiveUserId: self.ActiveUserId()
+            };
         };
     }
 
