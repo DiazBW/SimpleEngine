@@ -274,6 +274,8 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
+    <Content Include="Db\AspNetIdentityDataBaseOriginal.sql" />
+    <Content Include="Db\AspNetIdentityDataBaseCustom.sql" />
     <Content Include="Db\test.mdf" />
     <Content Include="Db\test_log.ldf" />
     <Content Include="EfDataModels\GameModel.edmx.sql" />
@@ -361,7 +363,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerPort>54827</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:35936/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

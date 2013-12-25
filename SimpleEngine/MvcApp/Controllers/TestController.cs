@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
+using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using MvcApp.EfDataModels;
@@ -125,20 +127,23 @@ namespace MvcApp.Controllers
 
 
                 // Default UserStore constructor uses the default connection string named: DefaultConnection
-                //var userStore = new UserStore<IdentityUser>();
-                //var manager = new UserManager<IdentityUser>(userStore);
+                var userStore = new UserStore<IdentityUser>();
+                var manager = new UserManager<IdentityUser>(userStore);
 
-                //var user = new IdentityUser() { UserName = model.Username };
-                //IdentityResult result = manager.Create(user, model.Password );
+                var user = new IdentityUser() { UserName = model.Username };
+                
+                //var context = new DbContext();
 
-                //if (result.Succeeded)
-                //{
-                //    model.Msg = string.Format("User {0} was created successfully!", user.UserName);
-                //}
-                //else
-                //{
-                //    model.Msg = result.Errors.FirstOrDefault();
-                //}
+                IdentityResult result = manager.Create(user, model.Password );
+
+                if (result.Succeeded)
+                {
+                    model.Msg = string.Format("User {0} was created successfully!", user.UserName);
+                }
+                else
+                {
+                    model.Msg = result.Errors.FirstOrDefault();
+                }
             }
             return View("CreateUserModel", model);
         }
