@@ -7,5 +7,6 @@ namespace MvcApp.UoW
     {
         Game Get(Int32 id);
         void SaveNew(Game game);
+        void Update(Game game);
     }
 }

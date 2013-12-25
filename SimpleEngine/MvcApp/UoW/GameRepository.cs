@@ -24,5 +24,10 @@ namespace MvcApp.UoW
         {
             InsertOnCommit(game);
         }
+
+        public void Update(Game game)
+        {
+            AddOrUpdate(game);
+        }
     }
 }

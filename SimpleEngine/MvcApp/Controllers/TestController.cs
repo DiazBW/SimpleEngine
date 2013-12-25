@@ -77,15 +77,21 @@ namespace MvcApp.Controllers
 
         public ActionResult AjaxLoad()
         {
-            var gameModel = GameModel.GetFake(10);
-            var gameModelDe = new GameModel();
-
-            JsonSerializerSettings settings = new JsonSerializerSettings();
-
-            var jsonModel = JsonConvert.SerializeObject(gameModel);
-            gameModelDe = JsonConvert.DeserializeObject<GameModel>(jsonModel);
-            var res = Json(jsonModel);
+            var uow = new UnitOfWork(new GameModelContainer());
+            GameService service = new GameService(uow);
+            var gameModel = service.Get(id : 1);
+            var res = Json(gameModel.Json);
             return res;
+
+            //var gameModel = GameModel.GetFake(10);
+            //var gameModelDe = new GameModel();
+
+            //JsonSerializerSettings settings = new JsonSerializerSettings();
+
+            //var jsonModel = JsonConvert.SerializeObject(gameModel);
+            //gameModelDe = JsonConvert.DeserializeObject<GameModel>(jsonModel);
+            //var res = Json(jsonModel);
+            //return res;
 
             //StringBuilder sb = new StringBuilder();
             //StringWriter sw = new StringWriter(sb);
