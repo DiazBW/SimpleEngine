@@ -10,9 +10,6 @@
     <projectUrl>http://katanaproject.codeplex.com/</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Common types which are shared by the various authentication middleware components.</description>
-    <releaseNotes />
-    <copyright />
-    <language />
     <tags>Microsoft OWIN Katana</tags>
     <dependencies>
       <dependency id="Owin" version="1.0" />

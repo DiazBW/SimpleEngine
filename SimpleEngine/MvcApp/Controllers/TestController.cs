@@ -25,6 +25,12 @@ namespace MvcApp.Controllers
         // GET: /Test/
         private static Game TheGame;
 
+        [HttpPost]
+        public ActionResult RequestCheck()
+        {
+            return RedirectToAction("ShowBoard");
+        }
+
         public ActionResult Index()
         {
             //return RedirectToAction("UserTest", new { userId = 12 } );
@@ -110,7 +116,7 @@ namespace MvcApp.Controllers
             var model = new CreateUserModel
             {
                 Username = "name",
-                Password = "pass",
+                Password = "password",
                 Email = "mail",
                 Msg = "message"
             };
