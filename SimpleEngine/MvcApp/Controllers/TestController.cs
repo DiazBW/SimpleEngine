@@ -83,6 +83,7 @@ namespace MvcApp.Controllers
             return Json("OK");
         }
 
+        //TODO: Ajax only attribute
         public ActionResult AjaxLoad()
         {
             var uow = new UnitOfWork(new GameModelContainer());
@@ -110,49 +111,89 @@ namespace MvcApp.Controllers
             //return res;
         }
 
-        [HttpGet]
-        public ActionResult CreateUser()
-        {
-            var model = new CreateUserModel
-            {
-                Username = "name",
-                Password = "password",
-                Email = "mail",
-                Msg = "message"
-            };
-            return View("CreateUserModel", model);
-        }
+        //[HttpGet]
+        //public ActionResult CreateUser()
+        //{
+        //    var model = new CreateUserModel
+        //    {
+        //        Username = "name",
+        //        Password = "password",
+        //        Email = "mail",
+        //        Msg = "message"
+        //    };
+        //    return View("CreateUserModel", model);
+        //}
 
-        [HttpPost]
-        public ActionResult CreateUser(CreateUserModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                //EfDataModels.Game game = new EfDataModels.Game();
-                //game.ActivePlayerId = model.
+        //[HttpGet]
+        //public ActionResult SignIn()
+        //{
+        //    var model = new SignInModel
+        //    {
+        //        Login = "name",
+        //        Password = "password"
+        //    };
+        //    return View("SignIn", model);
+        //}
 
+        //[HttpPost]
+        //public ActionResult SignIn(SignInModel model)
+        //{
+        //    var userStore = new UserStore<IdentityUser>();
+        //    var userManager = new UserManager<IdentityUser>(userStore);
 
-                // Default UserStore constructor uses the default connection string named: DefaultConnection
-                var userStore = new UserStore<IdentityUser>();
-                var manager = new UserManager<IdentityUser>(userStore);
+        //    var user = userManager.Find(model.Login, model.Password);
 
-                var user = new IdentityUser() { UserName = model.Username };
+        //    if (user != null)
+        //    {
+        //        //var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
+        //        //var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+        //        //authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, userIdentity);
+
+        //        //var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
+        //        //HttpContext..
+        //        //var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+        //        //authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, userIdentity);
+
+        //        return RedirectToAction("ShowBoard");
+        //    }
+        //    else
+        //    {
+        //        ViewBag.Msg = "Invalid username or password.";
+        //    }
+
+        //    return View("SignIn", model);
+        //}
+
+        ////protected void SignOut(object sender, EventArgs e)
+        ////{
+        ////    var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
+        ////    authenticationManager.SignOut();
+        ////    Response.Redirect("~/Login.aspx");
+        ////}
+
+        ////[HttpPost]
+        ////public ActionResult CreateUser(CreateUserModel model)
+        ////{
+        ////    if (ModelState.IsValid)
+        ////    {
+        ////        // Default UserStore constructor uses the default connection string named: DefaultConnection
+        ////        var userStore = new UserStore<IdentityUser>();
+        ////        var manager = new UserManager<IdentityUser>(userStore);
+        ////        var user = new IdentityUser() { UserName = model.Username };
                 
-                //var context = new DbContext();
+        ////        IdentityResult result = manager.Create(user, model.Password );
 
-                IdentityResult result = manager.Create(user, model.Password );
-
-                if (result.Succeeded)
-                {
-                    model.Msg = string.Format("User {0} was created successfully!", user.UserName);
-                }
-                else
-                {
-                    model.Msg = result.Errors.FirstOrDefault();
-                }
-            }
-            return View("CreateUserModel", model);
-        }
+        ////        if (result.Succeeded)
+        ////        {
+        ////            model.Msg = string.Format("User {0} was created successfully!", user.UserName);
+        ////        }
+        ////        else
+        ////        {
+        ////            model.Msg = result.Errors.FirstOrDefault();
+        ////        }
+        ////    }
+        ////    return View("CreateUserModel", model);
+        ////}
 
 
         //var settings = new JsonSerializerSettings()

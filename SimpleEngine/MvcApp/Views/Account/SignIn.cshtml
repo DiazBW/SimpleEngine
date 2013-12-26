@@ -1,4 +1,4 @@
-﻿@model MvcApp.Models.User.RegisterUserModel
+﻿@model MvcApp.Models.User.SignInModel
 
 @{
     Layout = null;
@@ -8,28 +8,26 @@
 
 <html>
     <head>
-        <title>UserCreation</title>
+        <title>title</title>
     </head>
     <body>
         <div>
-            @using (Html.BeginForm("CreateUser", "Test", FormMethod.Post))
+           @using (Html.BeginForm("SignIn", "Account", FormMethod.Post))
             {
                 <div>
                     @Html.ValidationSummary(true)
                     @Html.AntiForgeryToken()
                 </div>
                 <div>
-                    @Html.TextBoxFor(m => m.Username)
+                    @Html.TextBoxFor(m => m.Login)
                     @Html.TextBoxFor(m => m.Password)
-                    @Html.TextBoxFor(m => m.Email)
-                    @Html.TextBoxFor(m => m.Msg)
                     <span>
-                        <input type="submit" value="CreateUser" />
+                        <input type="submit" value="Login" />
                     </span>
                 </div>
                 <div id="test-res">
                 </div>
-            }
+            }   
         </div>
     </body>
 </html>
