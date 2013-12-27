@@ -18,6 +18,7 @@ namespace MvcApp.EfDataModels
         public int PlayerOneId { get; set; }
         public int PlayerTwoId { get; set; }
         public int ActivePlayerId { get; set; }
+        public bool IsFinished { get; set; }
         public string Json { get; set; }
     }
 }

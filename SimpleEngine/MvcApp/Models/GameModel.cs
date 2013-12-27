@@ -11,6 +11,7 @@ namespace MvcApp.Models
         public Int32 PlayerOneId { get; set; }
         public Int32 PlayerTwoId { get; set; }
         public Int32 ActivePlayerId { get; set; }
+        public Boolean IsFinished { get; set; }
 
         public List<CellRow> Rows { get; set; }
 

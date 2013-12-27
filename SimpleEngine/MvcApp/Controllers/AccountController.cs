@@ -8,9 +8,11 @@
 //using Microsoft.Owin.Security;
 
 
+using System;
 using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -53,28 +55,28 @@ namespace MvcApp.Controllers
         //    return View(model);
         //}
 
-        private async Task SignInAsync(ApplicationUser user, bool isPersistent)
-        {
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
+        //private async Task SignInAsync(ApplicationUser user, bool isPersistent)
+        //{
+        //    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
 
-            var identity = await UserManager.CreateIdentityAsync(
-               user, DefaultAuthenticationTypes.ApplicationCookie);
+        //    var identity = await UserManager.CreateIdentityAsync(
+        //       user, DefaultAuthenticationTypes.ApplicationCookie);
 
-            AuthenticationManager.SignIn(
-               new AuthenticationProperties()
-               {
-                   IsPersistent = isPersistent
-               }, identity);
-        }
+        //    AuthenticationManager.SignIn(
+        //       new AuthenticationProperties()
+        //       {
+        //           IsPersistent = isPersistent
+        //       }, identity);
+        //}
 
         // POST: /Account/LogOff
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult LogOff()
-        {
-            AuthenticationManager.SignOut();
-            return RedirectToAction("Index", "Home");
-        }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult LogOff()
+        //{
+        //    AuthenticationManager.SignOut();
+        //    return RedirectToAction("Index", "Home");
+        //}
 
        
 
@@ -124,12 +126,12 @@ namespace MvcApp.Controllers
             return View("Register", model);
         }
 
-        private async Task SignInAsync(IdentityUser user, bool isPersistent)
-        {
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-            var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
-            AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = isPersistent }, identity);
-        }
+        //private async Task SignInAsync(IdentityUser user, bool isPersistent)
+        //{
+        //    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
+        //    var identity = await UserManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
+        //    AuthenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = isPersistent }, identity);
+        //}
 
         [HttpGet]
         public ActionResult SignIn()
@@ -142,6 +144,8 @@ namespace MvcApp.Controllers
             return View("SignIn", model);
         }
 
+        // user list : 
+        // username:password
         [HttpPost]
         public ActionResult SignIn(SignInModel model)
         {
@@ -149,13 +153,17 @@ namespace MvcApp.Controllers
             var userManager = new UserManager<IdentityUser>(userStore);
 
             var user = userManager.Find(model.Login, model.Password);
+            //userManager.GetLoginsAsync()
 
             if (user != null)
             {
-                Request.GetOwinContext();
-                
-                var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
-                //var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+                //Request.Cookies.Add(new HttpCookie("username", model.Login));
+                String playerId = PlayerNameToStr(model.Login);
+                Response.Cookies.Add(new HttpCookie("playerId", playerId));
+            //    Request.GetOwinContext();
+            //    HttpContext.
+            //    var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
+            //    //var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
                 //authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, userIdentity);
 
                 //var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
@@ -171,6 +179,30 @@ namespace MvcApp.Controllers
             }
 
             return View("SignIn", model);
+        }
+
+        // todo: remake with authentication =\
+        // todo: temporary add limit for creates open games
+        // todo: temporary add clearing for finished games
+        private String PlayerNameToStr(string shortName)
+        {
+            String res = "0";
+            switch (shortName)
+            {
+                case "player1":
+                    res = "1";
+                    break;
+                case "player2":
+                    res = "2";
+                    break;
+                case "player3":
+                    res = "3";
+                    break;
+                case "player4":
+                    res = "4";
+                    break;
+            }
+            return res;
         }
     }
 }

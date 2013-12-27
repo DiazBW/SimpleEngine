@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Threading.Tasks;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using MvcApp.EfDataModels;
@@ -108,6 +109,37 @@ namespace MvcApp.Controllers
             //var serializer = JsonSerializer.Create(new JsonSerializerSettings());
             //serializer.Serialize(writer, gameModel);
             //var res = Json(sb.ToString());
+            //return res;
+        }
+
+        //TODO: Ajax only attribute
+        public ActionResult AjaxTurn(TurnModel model)
+        {
+            var uow = new UnitOfWork(new GameModelContainer());
+            GameService service = new GameService(uow);
+
+            
+            if (Request.Cookies.AllKeys.Contains("playerId"))
+            {
+                String playerId = Request.Cookies.Get("playerId").Value;
+                if (!String.IsNullOrWhiteSpace(playerId))
+                {
+                    var actualGame = service.GetActualGameForPlayer(playerId);
+                    if (actualGame != null)
+                    {
+                        service.Turn(playerId);
+                        //actualGame.
+                    }
+                }
+            }
+
+
+
+            //service.GetActualGameForPlayer(model);
+            //
+            //var gameModel = service.Get(id: 1);
+
+            //var res = Json(gameModel.Json);
             //return res;
         }
 
