@@ -149,37 +149,47 @@ namespace MvcApp.Controllers
         [HttpPost]
         public ActionResult SignIn(SignInModel model)
         {
-            var userStore = new UserStore<IdentityUser>();
-            var userManager = new UserManager<IdentityUser>(userStore);
-
-            var user = userManager.Find(model.Login, model.Password);
-            //userManager.GetLoginsAsync()
-
-            if (user != null)
-            {
-                //Request.Cookies.Add(new HttpCookie("username", model.Login));
-                String playerId = PlayerNameToStr(model.Login);
-                Response.Cookies.Add(new HttpCookie("playerId", playerId));
-            //    Request.GetOwinContext();
-            //    HttpContext.
-            //    var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
-            //    //var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
-                //authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, userIdentity);
-
-                //var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
-                //HttpContext..
-                //var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
-                //authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, userIdentity);
-
-                return RedirectToAction("ShowBoard", "Test");
-            }
-            else
-            {
-                ViewBag.Msg = "Invalid username or password.";
-            }
-
-            return View("SignIn", model);
+            String playerId = PlayerNameToStr(model.Login);
+            Response.Cookies.Add(new HttpCookie("playerId", playerId));
+            return RedirectToAction("ShowBoard", "Test");
         }
+        
+        //// user list : 
+        //// username:password
+        //[HttpPost]
+        //public ActionResult SignIn(SignInModel model)
+        //{
+        //    var userStore = new UserStore<IdentityUser>();
+        //    var userManager = new UserManager<IdentityUser>(userStore);
+
+        //    var user = userManager.Find(model.Login, model.Password);
+        //    //userManager.GetLoginsAsync()
+
+        //    if (user != null)
+        //    {
+        //        //Request.Cookies.Add(new HttpCookie("username", model.Login));
+        //        String playerId = PlayerNameToStr(model.Login);
+        //        Response.Cookies.Add(new HttpCookie("playerId", playerId));
+        //    //    Request.GetOwinContext();
+        //    //    HttpContext.
+        //    //    var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
+        //    //    //var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+        //        //authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, userIdentity);
+
+        //        //var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
+        //        //HttpContext..
+        //        //var userIdentity = userManager.CreateIdentity(user, DefaultAuthenticationTypes.ApplicationCookie);
+        //        //authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, userIdentity);
+
+        //        return RedirectToAction("ShowBoard", "Test");
+        //    }
+        //    else
+        //    {
+        //        ViewBag.Msg = "Invalid username or password.";
+        //    }
+
+        //    return View("SignIn", model);
+        //}
 
         // todo: remake with authentication =\
         // todo: temporary add limit for creates open games

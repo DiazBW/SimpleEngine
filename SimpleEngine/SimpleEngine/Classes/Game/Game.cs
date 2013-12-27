@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using SimpleEngine.Interfaces;
 
@@ -67,6 +68,45 @@ namespace SimpleEngine.Classes.Game
 
             _playerValidator = new PlayerValidator(this);
             _turnValidator = new TurnValidator(this);
+        }
+
+        public void LoadState(Int32 activePlayerId, Board board)
+        {
+            if (activePlayerId != PlayerOneId && activePlayerId != PlayerTwoId)
+            {
+                var msg = String.Format("Player {0} is not a member of this game.", activePlayerId);
+                throw new ArgumentException(msg);
+            }
+
+            if (board.Size != Board.Size)
+            {
+                var msg = String.Format("Baord size must be {0}.", Board.Size);
+                throw new ArgumentException(msg);
+            }
+
+            ActivePlayerId = activePlayerId;
+            //Board = board;
+            Shapes = GetShapesByBoard(board);
+        }
+
+        private List<Shape> GetShapesByBoard(Board board)
+        {
+            var res = new List<Shape>();
+            for (var rowIndex = 0; rowIndex < board.Size; rowIndex++)
+            {
+                for (var columnIndex = 0; columnIndex < board.Size; columnIndex++)
+                {
+                    GameTurnStruct turn = new GameTurnStruct
+                    {
+                        RowIndex = rowIndex,
+                        ColumnIndex = columnIndex,
+                        Value = board.Cells[rowIndex, columnIndex]
+                    };
+                    var newShapeId = CreateNewShape(turn);
+                    MergeShapesInto(newShapeId, turn);
+                }
+            }
+            return res;
         }
 
         private Boolean EmulateTurnAndCheck(GameTurnStruct turn, Func<Boolean> checkFunc)

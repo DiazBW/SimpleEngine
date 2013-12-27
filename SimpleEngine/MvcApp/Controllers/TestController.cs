@@ -16,6 +16,7 @@ using MvcApp.Models;
 using MvcApp.Models.User;
 using MvcApp.UoW;
 using Newtonsoft.Json;
+using NotFoundMvc;
 using Game = SimpleEngine.Classes.Game.Game;
 
 namespace MvcApp.Controllers
@@ -56,7 +57,7 @@ namespace MvcApp.Controllers
 
         public ActionResult ShowBoard()
         {
-            TheGame = new Game(11, 13);
+            TheGame = new Game(1, 2);
             var model = new BoardModel(TheGame);
             return View(model);
         }
@@ -79,7 +80,8 @@ namespace MvcApp.Controllers
 
             var uow = new UnitOfWork(new GameModelContainer());
             GameService service = new GameService(uow);
-            service.SaveGame(model);
+            //service.UpdateGame(model,);
+            service.UpdateGame(model, 1);
 
             return Json("OK");
         }
@@ -89,7 +91,7 @@ namespace MvcApp.Controllers
         {
             var uow = new UnitOfWork(new GameModelContainer());
             GameService service = new GameService(uow);
-            var gameModel = service.Get(id : 1);
+            MvcApp.EfDataModels.Game gameModel = service.Get(id : 1);
             var res = Json(gameModel.Json);
             return res;
 
@@ -117,9 +119,8 @@ namespace MvcApp.Controllers
         {
             var uow = new UnitOfWork(new GameModelContainer());
             GameService service = new GameService(uow);
-
             
-            if (Request.Cookies.AllKeys.Contains("playerId"))
+            if (ModelState.IsValid && Request.Cookies.AllKeys.Contains("playerId"))
             {
                 String playerId = Request.Cookies.Get("playerId").Value;
                 if (!String.IsNullOrWhiteSpace(playerId))
@@ -127,20 +128,13 @@ namespace MvcApp.Controllers
                     var actualGame = service.GetActualGameForPlayer(playerId);
                     if (actualGame != null)
                     {
-                        service.Turn(playerId);
-                        //actualGame.
+                        service.TurnV2(model);
+                        return RedirectToAction("AjaxLoad");
                     }
                 }
             }
 
-
-
-            //service.GetActualGameForPlayer(model);
-            //
-            //var gameModel = service.Get(id: 1);
-
-            //var res = Json(gameModel.Json);
-            //return res;
+            return new NotFoundViewResult();
         }
 
         //[HttpGet]

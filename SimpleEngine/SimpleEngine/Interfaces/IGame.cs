@@ -13,5 +13,6 @@ namespace SimpleEngine.Interfaces
 
         void PlayerSkipTurn(Int32 playerId);
         void Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId);
+        void LoadState(Int32 activePlayerId, Board board);
     }
 }
