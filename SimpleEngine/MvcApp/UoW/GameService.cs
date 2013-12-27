@@ -152,5 +152,28 @@ namespace MvcApp.UoW
             _unitOfWork.GameRepository.Update(gameDataObject);
             _unitOfWork.Save();
         }
+
+        public Int32 OpenNewGame(Int32 playerId)
+        {
+            //GameRepository.SaveNew();
+            //GameRepository.SaveNew();
+            //var newGame = new Game
+            //{
+            //    PlayerOneId = playerId,
+            //    PlayerTwoId = null,
+            //    ActivePlayerId = playerId,
+            //    IsFinished = false
+            //};
+
+            //var gameDataObject = new Game
+            //{
+            //    PlayerOneId = gameModel.PlayerOneId,
+            //    PlayerTwoId = gameModel.PlayerTwoId,
+            //    ActivePlayerId = gameModel.ActivePlayerId,
+            //    IsFinished = gameModel.IsFinished,
+            //    Json = json
+            //};
+            throw new NotImplementedException();
+        }
     }
 }
