@@ -91,9 +91,11 @@ namespace MvcApp.Controllers
         {
             var uow = new UnitOfWork(new GameModelContainer());
             GameService service = new GameService(uow);
-            MvcApp.EfDataModels.Game gameModel = service.Get(id : 1);
-            var res = Json(gameModel.Json);
-            return res;
+            //MvcApp.EfDataModels.Game gameModel = service.Get(id : 1);
+            //var res = Json(gameModel.Json);
+            var gameModel = service.Get(id: 1);
+            var json = JsonConvert.SerializeObject(gameModel);
+            return Json(json);
 
             //var gameModel = GameModel.GetFake(10);
             //var gameModelDe = new GameModel();

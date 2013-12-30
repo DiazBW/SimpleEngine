@@ -34,37 +34,30 @@
         <title>title</title>
     </head>
     <body>
+        <h1>
+            Player id is @ViewBag.PlayerId
+        </h1>
         <div>
             <table class="board-table">
                 <thead>
                     <tr>
                         <td>
-                            <p>One id: <input data-bind="value: PlayerOneId" /></p>
-                            <p>Two id: <input data-bind="value: PlayerTwoId" /></p>
-                            <p>Active id: <input data-bind="value: ActiveUserId" /></p>
+                            <p>PlayerOneId: <input data-bind="value: PlayerOneId" /></p>
+                            <p>PlayerTwoId: <input data-bind="value: PlayerTwoId" /></p>
+                            <p>ActivePlayerId: <input data-bind="value: ActiveUserId" /></p>
                         </td>
                         <td>
-                            <p>One: <input data-bind="value: PlayerOneId" /></p>
-                            <p>Two: <input data-bind="value: PlayerTwoId" /></p>
-                            <p>Active: <input data-bind="value: ActiveUserId" /></p>
-                            <p>Cell: <input data-bind="value: ActiveCellType"/></p>
-                        </td>
-                        <td>
-                            <input type="button" data-bind="click: SaveGame" value="Save" />
-                            <input type="button" data-bind="click: LoadGame" value="Load" />
-                        </td>
-                        <td>
-                            
-                            
                             <input type="text" id="rowIndex"/>
                             <input type="text" id="columnIndex"/>
                             <input type="button" data-bind="click: SendTurn" value="Turn" />
-                            
+                        </td>
+                        <td>
                             <input type="text" data-bind="value: GameId"/>
+                            <input type="button" data-bind="click: GetGame" value="GetGame" />
+                        </td>
+                        <td>
                             <input type="button" data-bind="click: OpenGame" value="OpenGame" />
                             <input type="button" data-bind="click: CloseGame" value="CloseGame" />
-                            <input type="button" data-bind="click: GetGame" value="GetGame" />
-                            
                         </td>
                     </tr>
                 </thead>

@@ -86,16 +86,18 @@ namespace SimpleEngine.Classes.Game
 
             ActivePlayerId = activePlayerId;
             //Board = board;
-            Shapes = GetShapesByBoard(board);
+            //Shapes = GetShapesByBoard(board);
+            GenerateShapesByBoard(board);
         }
 
-        private List<Shape> GetShapesByBoard(Board board)
+        private void GenerateShapesByBoard(Board board)
         {
-            var res = new List<Shape>();
             for (var rowIndex = 0; rowIndex < board.Size; rowIndex++)
             {
                 for (var columnIndex = 0; columnIndex < board.Size; columnIndex++)
                 {
+                    if (board.Cells[rowIndex, columnIndex] == CellType.Empty)
+                        continue;
                     GameTurnStruct turn = new GameTurnStruct
                     {
                         RowIndex = rowIndex,
@@ -106,7 +108,6 @@ namespace SimpleEngine.Classes.Game
                     MergeShapesInto(newShapeId, turn);
                 }
             }
-            return res;
         }
 
         private Boolean EmulateTurnAndCheck(GameTurnStruct turn, Func<Boolean> checkFunc)

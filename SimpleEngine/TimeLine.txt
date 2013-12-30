@@ -15,4 +15,4 @@
 	1h - Asp.net identity
 	2h - EF connection, and UoW
 
-2h - game cycle
+2.5h - game cycle

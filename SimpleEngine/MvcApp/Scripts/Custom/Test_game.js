@@ -73,18 +73,18 @@
 
         self.CellClicked = function (cellViewModel) {
 
-            //self.SendTurn(cellViewModel.RowIndex(), cellViewModel.ColumnIndex());
+            self.SendTurn(cellViewModel.RowIndex(), cellViewModel.ColumnIndex());
 
-            var typeValue = cellViewModel.Value();
-            var newValue = typeValue;
-            if (typeValue == 0) {
-                newValue = 1;
-            } else if (typeValue == 1) {
-                newValue = 2;
-            } else if (typeValue == 2) {
-                newValue = 0;
-            }
-            cellViewModel.Value(newValue);
+            //var typeValue = cellViewModel.Value();
+            //var newValue = typeValue;
+            //if (typeValue == 0) {
+            //    newValue = 1;
+            //} else if (typeValue == 1) {
+            //    newValue = 2;
+            //} else if (typeValue == 2) {
+            //    newValue = 0;
+            //}
+            //cellViewModel.Value(newValue);
         };
 
         self.GetClassForCell = function (cellViewModel) {
@@ -230,10 +230,10 @@
             });
         };
         
-        //self.SendTurn = function (rowIndex, columnIndex) {
-        self.SendTurn = function () {
-            var rowIndex = $("#rowIndex").val();
-            var columnIndex = $("#columnIndex").val();
+        self.SendTurn = function (rowIndex, columnIndex) {
+        //self.SendTurn = function () {
+            //var rowIndex = $("#rowIndex").val();
+            //var columnIndex = $("#columnIndex").val();
             var postData = {
                 RowIndex: rowIndex,
                 ColumnIndex: columnIndex,

@@ -19,6 +19,7 @@ namespace MvcApp.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            ViewBag.PlayerId = Request.Cookies.Get("playerId").Value;
             return View();
         }
 
@@ -49,10 +50,10 @@ namespace MvcApp.Controllers
 
             service.CloseGame(gameId, playerId);
 
-            var game = service.Get(gameId);
+            //var game = service.Get(gameId);
             // TODO: rewrite
-            var gameModelEmpty = GameModel.GetFake(19, game.PlayerOneId, game.PlayerTwoId.Value);
-            service.UpdateGame(gameModelEmpty, game.Id);
+            //var gameModelEmpty = GameModel.GetFake(19, game.PlayerOneId, game.PlayerTwoId.Value);
+            //service.UpdateGame(gameModelEmpty, game.Id);
 
             return Json("OK");
         }
@@ -65,10 +66,15 @@ namespace MvcApp.Controllers
             GameService service = new GameService(uow);
 
             var game = service.Get(gameId);
+
+            var json = JsonConvert.SerializeObject(game);
             //GameModel gameModel = CreateGameModel(game);
 
             //var jsonGame = GameJsonParser.ToJsonString(gameModel);
-            return Json(game.Json);
+            //return Json(game.Json);
+
+            ViewBag.PlayerId = Request.Cookies.Get("playerId").Value;
+            return Json(json);
         }
 
         //[HttpPost]
@@ -96,8 +102,10 @@ namespace MvcApp.Controllers
                 String playerId = Request.Cookies.Get("playerId").Value;
                 if (!String.IsNullOrWhiteSpace(playerId))
                 {
-                    var game = service.Turn(model, Int32.Parse(playerId));
-                    return Json(game.Json);
+                    //var game = service.Turn(model, Int32.Parse(playerId));
+                    //return Json(game.Json);
+                    service.Turn(model, Int32.Parse(playerId));
+                    return Json("OK");
                 }
             }
 
