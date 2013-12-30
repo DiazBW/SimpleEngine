@@ -85,8 +85,6 @@ namespace SimpleEngine.Classes.Game
             }
 
             ActivePlayerId = activePlayerId;
-            //Board = board;
-            //Shapes = GetShapesByBoard(board);
             GenerateShapesByBoard(board);
         }
 
@@ -98,7 +96,7 @@ namespace SimpleEngine.Classes.Game
                 {
                     if (board.Cells[rowIndex, columnIndex] == CellType.Empty)
                         continue;
-                    GameTurnStruct turn = new GameTurnStruct
+                    var turn = new GameTurnStruct
                     {
                         RowIndex = rowIndex,
                         ColumnIndex = columnIndex,

@@ -179,10 +179,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\BoardModel.cs" />
-    <Compile Include="Models\GameCreateModel.cs" />
     <Compile Include="Models\GameModel.cs" />
-    <Compile Include="Models\GetGameModel.cs" />
-    <Compile Include="Models\TestModel.cs" />
     <Compile Include="Models\TurnModel.cs" />
     <Compile Include="Models\User\RegisterUserModel.cs" />
     <Compile Include="Models\User\SignInModel.cs" />
@@ -345,12 +342,6 @@
       <Name>SimpleEngine</Name>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Test\UserTest.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Test\ShowBoard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

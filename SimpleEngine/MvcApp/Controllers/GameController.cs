@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Web.Mvc;
 using MvcApp.EfDataModels;
 using MvcApp.Models;
@@ -50,16 +49,10 @@ namespace MvcApp.Controllers
 
             service.CloseGame(gameId, playerId);
 
-            //var game = service.Get(gameId);
-            // TODO: rewrite
-            //var gameModelEmpty = GameModel.GetFake(19, game.PlayerOneId, game.PlayerTwoId.Value);
-            //service.UpdateGame(gameModelEmpty, game.Id);
-
             return Json("OK");
         }
 
         [HttpPost]
-        //public ActionResult GetGame(GetGameModel getGameModel)
         public ActionResult GetGame(Int32 gameId)
         {
             var uow = new UnitOfWork(new GameModelContainer());
@@ -68,28 +61,10 @@ namespace MvcApp.Controllers
             var game = service.Get(gameId);
 
             var json = JsonConvert.SerializeObject(game);
-            //GameModel gameModel = CreateGameModel(game);
-
-            //var jsonGame = GameJsonParser.ToJsonString(gameModel);
-            //return Json(game.Json);
 
             ViewBag.PlayerId = Request.Cookies.Get("playerId").Value;
             return Json(json);
         }
-
-        //[HttpPost]
-        //public ActionResult PlayerTurn(TurnModel turnModel)
-        //{
-        //    // get player id from controller 
-        //    var uow = new UnitOfWork(new GameModelContainer());
-        //    GameService service = new GameService(uow);
-
-        //    var gameAfterTurn = service.Turn(turnModel);
-        //    var jsonGame = GameJsonParser.ToJsonString(gameAfterTurn);
-
-        //    // maybe show only success/failed version for traffic minimization
-        //    return Json(jsonGame);
-        //}
 
         //TODO: Ajax only attribute
         public ActionResult Turn(TurnModel model)
@@ -102,8 +77,6 @@ namespace MvcApp.Controllers
                 String playerId = Request.Cookies.Get("playerId").Value;
                 if (!String.IsNullOrWhiteSpace(playerId))
                 {
-                    //var game = service.Turn(model, Int32.Parse(playerId));
-                    //return Json(game.Json);
                     service.Turn(model, Int32.Parse(playerId));
                     return Json("OK");
                 }
