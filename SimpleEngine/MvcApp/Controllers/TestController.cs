@@ -19,24 +19,24 @@ namespace MvcApp.Controllers
             return View();
         }
 
-        public JsonResult AjaxSave(GameModel model)
-        {
-            var uow = new UnitOfWork(new GameModelContainer());
-            GameService service = new GameService(uow);
-            service.UpdateGame(model, 1);
+        //public JsonResult AjaxSave(GameModel model)
+        //{
+        //    var uow = new UnitOfWork(new GameModelContainer());
+        //    GameService service = new GameService(uow);
+        //    service.UpdateGame(model, 1);
 
-            return Json("OK");
-        }
+        //    return Json("OK");
+        //}
 
-        //TODO: Ajax only attribute
-        public ActionResult AjaxLoad()
-        {
-            var uow = new UnitOfWork(new GameModelContainer());
-            GameService service = new GameService(uow);
+        ////TODO: Ajax only attribute
+        //public ActionResult AjaxLoad()
+        //{
+        //    var uow = new UnitOfWork(new GameModelContainer());
+        //    GameService service = new GameService(uow);
 
-            var gameModel = service.Get(id: 1);
-            var json = JsonConvert.SerializeObject(gameModel);
-            return Json(json);
-        }
+        //    var gameModel = service.Get(id: 1);
+        //    var json = JsonConvert.SerializeObject(gameModel);
+        //    return Json(json);
+        //}
     }
 }

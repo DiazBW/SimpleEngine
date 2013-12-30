@@ -32,22 +32,15 @@
         <title>title</title>
     </head>
     <body>
-        <h1>
-            Player id is @ViewBag.PlayerId
-        </h1>
+        <h1> Current id is @ViewBag.PlayerId </h1>
         <div>
             <table class="board-table">
                 <thead>
                     <tr>
                         <td>
-                            <p>PlayerOneId: <input data-bind="value: PlayerOneId" /></p>
-                            <p>PlayerTwoId: <input data-bind="value: PlayerTwoId" /></p>
-                            <p>ActivePlayerId: <input data-bind="value: ActiveUserId" /></p>
-                        </td>
-                        <td>
-                            <input type="text" id="rowIndex"/>
-                            <input type="text" id="columnIndex"/>
-                            <input type="button" data-bind="click: SendTurn" value="Turn" />
+                            <p>PlayerOneId: <p data-bind="text: PlayerOneId" /></p>
+                            <p>PlayerTwoId: <p data-bind="text: PlayerTwoId" /></p>
+                            <p>ActivePlayerId: <p data-bind="text: ActiveUserId" /></p>
                         </td>
                         <td>
                             <input type="text" data-bind="value: GameId"/>

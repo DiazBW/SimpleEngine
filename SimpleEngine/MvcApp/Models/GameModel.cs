@@ -8,6 +8,7 @@ namespace MvcApp.Models
 {
     public class GameModel
     {
+        public Int32 GameId { get; set; }
         public Int32 PlayerOneId { get; set; }
         public Int32 PlayerTwoId { get; set; }
         public Int32 ActivePlayerId { get; set; }

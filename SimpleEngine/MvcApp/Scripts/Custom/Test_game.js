@@ -72,19 +72,7 @@
         });
 
         self.CellClicked = function (cellViewModel) {
-
             self.SendTurn(cellViewModel.RowIndex(), cellViewModel.ColumnIndex());
-
-            //var typeValue = cellViewModel.Value();
-            //var newValue = typeValue;
-            //if (typeValue == 0) {
-            //    newValue = 1;
-            //} else if (typeValue == 1) {
-            //    newValue = 2;
-            //} else if (typeValue == 2) {
-            //    newValue = 0;
-            //}
-            //cellViewModel.Value(newValue);
         };
 
         self.GetClassForCell = function (cellViewModel) {
@@ -99,48 +87,47 @@
             return "cell-type-" + typeText;
         };
         
-        self.SaveGame = function () {
-            var unmappedModel = self.GetJS();
-            var jsonForSave = JSON.stringify(unmappedModel, null, 2);
+        //self.SaveGame = function () {
+        //    var unmappedModel = self.GetJS();
+        //    var jsonForSave = JSON.stringify(unmappedModel, null, 2);
             
-            $.ajax({
-                url: '/Test/AjaxSave',
-                type: 'POST',
-                dataType: 'json',
-                data: jsonForSave,
-                contentType: 'application/json; charset=utf-8',
-                success: function (data) {
-                    // TODO: error handling
-                    console.log(data);
-                },
-                error: function (data) {
-                    console.log(data);
-                }
-            });
-        };
+        //    $.ajax({
+        //        url: '/Test/AjaxSave',
+        //        type: 'POST',
+        //        dataType: 'json',
+        //        data: jsonForSave,
+        //        contentType: 'application/json; charset=utf-8',
+        //        success: function (data) {
+        //            // TODO: error handling
+        //            console.log(data);
+        //        },
+        //        error: function (data) {
+        //            console.log(data);
+        //        }
+        //    });
+        //};
 
-        self.LoadGame = function () {
-            $.post("/Test/AjaxLoad/")
-            .done(function (jsonData) {
-                //ko.mapping.fromJS(someJSON, {}, self);
-                var jsData = JSON.parse(jsonData);
+        //self.LoadGame = function () {
+        //    $.post("/Test/AjaxLoad/")
+        //    .done(function (jsonData) {
+        //        var jsData = JSON.parse(jsonData);
 
-                self.PlayerOneId(jsData.PlayerOneId);
-                self.PlayerTwoId(jsData.PlayerTwoId);
-                self.ActiveUserId(jsData.ActivePlayerId);
+        //        self.PlayerOneId(jsData.PlayerOneId);
+        //        self.PlayerTwoId(jsData.PlayerTwoId);
+        //        self.ActiveUserId(jsData.ActivePlayerId);
                 
-                self.Rows.removeAll();
-                for (var index in jsData.Rows) {
-                    var cells = jsData.Rows[index].Cells;
-                    var rowIndex = jsData.Rows[index].RowIndex;
-                    self.Rows.push(new RowViewModel(cells, rowIndex));
-                }
-                console.log("Load ajax done!");
-            })
-            .fail(function () {
-                console.log("Save ajax failed!");
-            });
-        };
+        //        self.Rows.removeAll();
+        //        for (var index in jsData.Rows) {
+        //            var cells = jsData.Rows[index].Cells;
+        //            var rowIndex = jsData.Rows[index].RowIndex;
+        //            self.Rows.push(new RowViewModel(cells, rowIndex));
+        //        }
+        //        console.log("Load ajax done!");
+        //    })
+        //    .fail(function () {
+        //        console.log("Save ajax failed!");
+        //    });
+        //};
 
         self.GetJS = function () {
             var rows = [];
@@ -207,7 +194,6 @@
                 contentType: 'application/json; charset=utf-8',
                 success: function (data) {
                     // TODO: error handling
-                    alert("gameClosed " + data);
                     console.log(data);
                     
                     var jsData = JSON.parse(data);
@@ -225,15 +211,13 @@
                     }
                 },
                 error: function (data) {
+                    alert("get game error");
                     console.log(data);
                 }
             });
         };
         
         self.SendTurn = function (rowIndex, columnIndex) {
-        //self.SendTurn = function () {
-            //var rowIndex = $("#rowIndex").val();
-            //var columnIndex = $("#columnIndex").val();
             var postData = {
                 RowIndex: rowIndex,
                 ColumnIndex: columnIndex,
@@ -249,8 +233,10 @@
                 success: function (data) {
                     // TODO: error handling
                     console.log(data);
+                    self.GetGame();
                 },
                 error: function (data) {
+                    alert("turn error");
                     console.log(data);
                 }
             });

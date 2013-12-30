@@ -165,6 +165,8 @@ namespace MvcApp.UoW
         public static GameModel DbGameToGameModel(Game dbGame)
         {
             GameModel gameModel = JsonConvert.DeserializeObject<GameModel>(dbGame.Json);
+            //TODO: Change to inner temporary id maybe
+            gameModel.GameId = dbGame.Id;
             gameModel.ActivePlayerId = dbGame.ActivePlayerId;
             gameModel.PlayerOneId = dbGame.PlayerOneId;
             gameModel.PlayerTwoId = dbGame.PlayerTwoId.Value;
@@ -176,6 +178,7 @@ namespace MvcApp.UoW
         {
             return new Game
             {
+                Id = gameModel.GameId,
                 PlayerOneId = gameModel.PlayerOneId,
                 PlayerTwoId = gameModel.PlayerTwoId,
                 ActivePlayerId = gameModel.ActivePlayerId,
