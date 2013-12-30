@@ -4,9 +4,9 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="GameModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="GameModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
   <EntityContainer Name="GameModelStoreContainer">
-    <EntitySet Name="Games" EntityType="GameModel.Store.Games" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+    <EntitySet Name="Games" EntityType="GameModel.Store.Games" store:Type="Tables" Schema="dbo" />
   </EntityContainer>
   <EntityType Name="Games">
     <Key>
@@ -14,9 +14,10 @@
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="PlayerOneId" Type="int" Nullable="false" />
-    <Property Name="PlayerTwoId" Type="int" Nullable="false" />
+    <Property Name="PlayerTwoId" Type="int" Nullable="true" />
     <Property Name="ActivePlayerId" Type="int" Nullable="false" />
     <Property Name="Json" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="IsFinished" Type="bit" Nullable="false" />
   </EntityType>
 </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -31,9 +32,10 @@
           </Key>
           <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="Int32" Name="PlayerOneId" Nullable="false" />
-          <Property Type="Int32" Name="PlayerTwoId" Nullable="false" />
+          <Property Type="Int32" Name="PlayerTwoId" Nullable="true" />
           <Property Type="Int32" Name="ActivePlayerId" Nullable="false" />
           <Property Type="String" Name="Json" Nullable="false" />
+          <Property Type="Boolean" Name="IsFinished" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -49,6 +51,7 @@
           <ScalarProperty Name="PlayerTwoId" ColumnName="PlayerTwoId" />
           <ScalarProperty Name="ActivePlayerId" ColumnName="ActivePlayerId" />
           <ScalarProperty Name="Json" ColumnName="Json" />
+          <ScalarProperty Name="IsFinished" ColumnName="IsFinished" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

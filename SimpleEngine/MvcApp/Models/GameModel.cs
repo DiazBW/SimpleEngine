@@ -17,6 +17,11 @@ namespace MvcApp.Models
 
         public static GameModel GetFake(Int32 size)
         {
+            return GetFake(size, playerOneId: 1, playerTwoId: 2);
+        }
+
+        public static GameModel GetFake(Int32 size, Int32 playerOneId, Int32 playerTwoId)
+        {
             var rows = new List<CellRow>();
             for (var i = 0; i < size; i++)
             {
@@ -28,11 +33,11 @@ namespace MvcApp.Models
                 rows.Add(new CellRow { Cells = cells, RowIndex = i });
             }
 
-            return new GameModel 
+            return new GameModel
             {
-                PlayerOneId = 1,
-                PlayerTwoId = 2,
-                ActivePlayerId = 1,
+                PlayerOneId = playerOneId,
+                PlayerTwoId = playerTwoId,
+                ActivePlayerId = playerOneId,
                 Rows = rows
             };
         }

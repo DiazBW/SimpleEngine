@@ -115,27 +115,27 @@ namespace MvcApp.Controllers
         }
 
         //TODO: Ajax only attribute
-        public ActionResult AjaxTurn(TurnModel model)
-        {
-            var uow = new UnitOfWork(new GameModelContainer());
-            GameService service = new GameService(uow);
+        //public ActionResult AjaxTurn(TurnModel model)
+        //{
+        //    var uow = new UnitOfWork(new GameModelContainer());
+        //    GameService service = new GameService(uow);
             
-            if (ModelState.IsValid && Request.Cookies.AllKeys.Contains("playerId"))
-            {
-                String playerId = Request.Cookies.Get("playerId").Value;
-                if (!String.IsNullOrWhiteSpace(playerId))
-                {
-                    var actualGame = service.GetActualGameForPlayer(playerId);
-                    if (actualGame != null)
-                    {
-                        service.TurnV2(model);
-                        return RedirectToAction("AjaxLoad");
-                    }
-                }
-            }
+        //    if (ModelState.IsValid && Request.Cookies.AllKeys.Contains("playerId"))
+        //    {
+        //        String playerId = Request.Cookies.Get("playerId").Value;
+        //        if (!String.IsNullOrWhiteSpace(playerId))
+        //        {
+        //            var actualGame = service.GetActualGameForPlayer(playerId);
+        //            if (actualGame != null)
+        //            {
+        //                service.TurnV2(model);
+        //                return RedirectToAction("AjaxLoad");
+        //            }
+        //        }
+        //    }
 
-            return new NotFoundViewResult();
-        }
+        //    return new NotFoundViewResult();
+        //}
 
         //[HttpGet]
         //public ActionResult CreateUser()

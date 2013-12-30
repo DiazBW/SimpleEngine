@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, and Azure
 -- --------------------------------------------------
--- Date Created: 12/25/2013 10:33:01
+-- Date Created: 12/30/2013 05:40:32
 -- Generated from EDMX file: D:\Experiments\DotNetTests\SimpleEngine\SimpleEngine\MvcApp\EfDataModels\GameModel.edmx
 -- --------------------------------------------------
 
@@ -34,9 +34,10 @@ GO
 CREATE TABLE [dbo].[Games] (
     [Id] int IDENTITY(1,1) NOT NULL,
     [PlayerOneId] int  NOT NULL,
-    [PlayerTwoId] int  NOT NULL,
+    [PlayerTwoId] int  NULL,
     [ActivePlayerId] int  NOT NULL,
-    [Json] nvarchar(max)  NOT NULL
+    [Json] nvarchar(max)  NOT NULL,
+    [IsFinished] bit  NOT NULL
 );
 GO
 
