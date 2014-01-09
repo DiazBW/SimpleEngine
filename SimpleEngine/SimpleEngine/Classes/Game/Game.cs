@@ -6,6 +6,7 @@ using SimpleEngine.Interfaces;
 
 namespace SimpleEngine.Classes.Game
 {
+    // TODO: add regions!
     public partial class Game : IGame
     {
         // TODO: remove
@@ -15,9 +16,13 @@ namespace SimpleEngine.Classes.Game
         {
             get
             {
-                return IsPlayerOneSkip && IsPlayerTwoSkip;
+                return IsPlayerOneSurrender || IsPlayerTwoSurrender || (IsPlayerOneSkip && IsPlayerTwoSkip);
             }
         }
+
+        //TODO: maybe double surrender throw exception
+        public Boolean IsPlayerOneSurrender { get; private set; }
+        public Boolean IsPlayerTwoSurrender { get; private set; }
 
         public Boolean IsPlayerOneSkip { get; private set; }
         public Boolean IsPlayerTwoSkip { get; private set; }
@@ -59,6 +64,11 @@ namespace SimpleEngine.Classes.Game
 
         public Game(Int32 playerOneId, Int32 playerTwoId)
         {
+            IsPlayerOneSkip = false;
+            IsPlayerTwoSkip = false;
+            IsPlayerOneSurrender = false;
+            IsPlayerTwoSurrender = false;
+
             PlayerOneId = playerOneId;
             PlayerTwoId = playerTwoId;
             ActivePlayerId = PlayerOneId;
@@ -70,7 +80,8 @@ namespace SimpleEngine.Classes.Game
             _turnValidator = new TurnValidator(this);
         }
 
-        public void LoadState(Int32 activePlayerId, Board board)
+        //TODO: load game over state and surrendered id
+        public void LoadState(Int32 activePlayerId, Board board, Boolean isPlayerOneSkip, Boolean isPlayerTwoSkip, Boolean isPlayerOneSurrender, Boolean isPlayerTwoSurrender)
         {
             if (activePlayerId != PlayerOneId && activePlayerId != PlayerTwoId)
             {
@@ -85,6 +96,10 @@ namespace SimpleEngine.Classes.Game
             }
 
             ActivePlayerId = activePlayerId;
+            IsPlayerOneSkip = isPlayerOneSkip;
+            IsPlayerTwoSkip = isPlayerTwoSkip;
+            IsPlayerOneSurrender = isPlayerOneSurrender;
+            IsPlayerTwoSurrender = isPlayerTwoSurrender;
             GenerateShapesByBoard(board);
         }
 
@@ -125,6 +140,23 @@ namespace SimpleEngine.Classes.Game
             return checkResult;
         }
 
+        //TODO: turn validation!
+        public void PlayerSurrender(Int32 playerId)
+        {
+            if (IsGameOver) return;
+
+            if (playerId == PlayerOneId)
+            {
+                IsPlayerOneSurrender = true;
+            }
+            //TODO: without turn validation playerId can be != One and != Two
+            if (playerId == PlayerTwoId)
+            {
+                IsPlayerTwoSurrender = true;
+            }
+        }
+
+        //TODO: turn validation!
         public void PlayerSkipTurn(Int32 playerId)
         {
             if (IsGameOver) return;
@@ -144,6 +176,7 @@ namespace SimpleEngine.Classes.Game
 
             if (IsGameOver)
             {
+                //TODO: into one function this pair of guys!
                 FillBoardWithRocksAfterGameFinished();
                 CalculateFinalScore();
             }

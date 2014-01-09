@@ -50,10 +50,13 @@
                             <input type="button" data-bind="click: OpenGame" value="OpenGame" />
                             <input type="button" data-bind="click: CloseGame" value="CloseGame" />
                         </td>
+                        <td>
+                            <input type="button" data-bind="click: SkipTurn" value="SkipTurn" />
+                            <input type="button" data-bind="click: Surrender" value="Surrender" />
+                        </td>
                     </tr>
                 </thead>
             </table>
-            
 
             @Html.Partial("_Board")
         </div>

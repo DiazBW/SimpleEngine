@@ -143,6 +143,46 @@
             };
         };
         
+        self.SkipTurn = function () {
+            var postData = { gameId: self.GameId() };
+            var jsonData = JSON.stringify(postData, null, 2);
+            $.ajax({
+                url: '/Game/SkipTurn',
+                type: 'POST',
+                dataType: 'json',
+                data: jsonData,
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    // TODO: error handling
+                    alert("turnSkipped " + data);
+                    console.log(data);
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+        };
+        
+        self.Surrender = function () {
+            var postData = { gameId: self.GameId() };
+            var jsonData = JSON.stringify(postData, null, 2);
+            $.ajax({
+                url: '/Game/Surrender',
+                type: 'POST',
+                dataType: 'json',
+                data: jsonData,
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    // TODO: error handling
+                    alert("you`ve surrendered " + data);
+                    console.log(data);
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+        };
+
         self.OpenGame = function () {
             var postData = { playerId: self.PlayerOneId() };
             var jsonData = JSON.stringify(postData, null, 2);

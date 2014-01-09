@@ -69,14 +69,14 @@ namespace MvcApp.Controllers
         //TODO: Ajax only attribute
         public ActionResult Turn(TurnModel model)
         {
-            var uow = new UnitOfWork(new GameModelContainer());
-            GameService service = new GameService(uow);
-
             if (ModelState.IsValid && Request.Cookies.AllKeys.Contains("playerId"))
             {
                 String playerId = Request.Cookies.Get("playerId").Value;
                 if (!String.IsNullOrWhiteSpace(playerId))
                 {
+                    var uow = new UnitOfWork(new GameModelContainer());
+                    GameService service = new GameService(uow);
+
                     service.Turn(model, Int32.Parse(playerId));
                     return Json("OK");
                 }
@@ -85,8 +85,42 @@ namespace MvcApp.Controllers
             return new NotFoundViewResult();
         }
 
-        // player surrender 
-        // player skip 
+        public ActionResult SkipTurn(Int32 gameId)
+        {
+            if (ModelState.IsValid && Request.Cookies.AllKeys.Contains("playerId"))
+            {
+                String playerId = Request.Cookies.Get("playerId").Value;
+                if (!String.IsNullOrWhiteSpace(playerId))
+                {
+                    var uow = new UnitOfWork(new GameModelContainer());
+                    GameService service = new GameService(uow);
+
+                    service.SkipTurn(gameId, Int32.Parse(playerId));
+
+                    return Json("OK");
+                }
+            }
+
+            return new NotFoundViewResult();
+        }
+
+        public ActionResult Surrender(Int32 gameId)
+        {
+            if (ModelState.IsValid && Request.Cookies.AllKeys.Contains("playerId"))
+            {
+                String playerId = Request.Cookies.Get("playerId").Value;
+                if (!String.IsNullOrWhiteSpace(playerId))
+                {
+                    var uow = new UnitOfWork(new GameModelContainer());
+                    GameService service = new GameService(uow);
+
+                    service.Surrender(gameId, Int32.Parse(playerId));
+                    return Json("OK");
+                }
+            }
+
+            return new NotFoundViewResult();
+        }
     }
 
     // TODO: separate somewhere

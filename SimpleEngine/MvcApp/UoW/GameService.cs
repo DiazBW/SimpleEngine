@@ -101,6 +101,41 @@ namespace MvcApp.UoW
             GameRepository.Update(changedGame);
             _unitOfWork.Save();
         }
+
+        public void SkipTurn(Int32 gameId, Int32 playerId)
+        {
+            // maybe get throw exception if does not exist
+            var dbGame = GameRepository.Get(gameId);
+            if (dbGame == null)
+            {
+                throw new ArgumentException("Game does not exists.");
+            }
+
+            SimpleEngine.Classes.Game.Game gameEngine = CustomSpecificParser.DbGameToEngineGame(dbGame);
+            gameEngine.PlayerSkipTurn(playerId);
+            var changedGame = CustomSpecificParser.EngineGameToDbGame(gameEngine);
+            changedGame.Id = dbGame.Id;
+
+            GameRepository.Update(changedGame);
+            _unitOfWork.Save();
+        }
+
+        public void Surrender(int gameId, int playerId)
+        {
+            var dbGame = GameRepository.Get(gameId);
+            if (dbGame == null)
+            {
+                throw new ArgumentException("Game does not exists.");
+            }
+
+            SimpleEngine.Classes.Game.Game gameEngine = CustomSpecificParser.DbGameToEngineGame(dbGame);
+            gameEngine.PlayerSurrender(playerId);
+            var changedGame = CustomSpecificParser.EngineGameToDbGame(gameEngine);
+            changedGame.Id = dbGame.Id;
+
+            GameRepository.Update(changedGame);
+            _unitOfWork.Save();
+        }
     }
 
     public class CustomSpecificParser
@@ -121,6 +156,7 @@ namespace MvcApp.UoW
                 }
             }
 
+            //TODO: save into DB scheme suitable game structure without json or add surrendering and skiping status for GameModel and take from there
             engineGame.LoadState(dbGame.ActivePlayerId, gameBoard);
             return engineGame;
         }
