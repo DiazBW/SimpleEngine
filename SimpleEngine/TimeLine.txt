@@ -16,3 +16,4 @@
 	2h - EF connection, and UoW
 
 3h - game cycle
+1h - surrender and skip turn
