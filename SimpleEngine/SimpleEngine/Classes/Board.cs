@@ -38,6 +38,33 @@ namespace SimpleEngine.Classes
 
             return hash;
         }
+
+        //TODO: rewitre to linq.Any ?
+        public bool HasEmptyCell()
+        {
+            for (var i = 0; i < Size; i++)
+            {
+                for (var j = 0; j < Size; j++)
+                {
+                    if (Cells[i, j] == CellType.Empty)
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        public static Board GetDeepCopy(Board source)
+        {
+            var destination = new Board(source.Size);
+            for (var i = 0; i < source.Size; i++)
+            {
+                for (var j = 0; j < source.Size; j++)
+                {
+                    destination.Cells[i, j] = source.Cells[i, j];
+                }
+            }
+            return destination;
+        }
     }
 
     public enum CellType

@@ -26,5 +26,6 @@ namespace MvcApp.EfDataModels
         }
     
         public DbSet<Game> Games { get; set; }
+        public DbSet<NewGameRequest> NewGameRequests { get; set; }
     }
 }

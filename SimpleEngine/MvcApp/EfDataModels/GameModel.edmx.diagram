@@ -5,7 +5,8 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="63e705a7ef57469a853216f0ddcbe52b" Name="Diagram1" >
-        <EntityTypeShape EntityType="GameModel.Game" Width="1.5" PointX="3" PointY="2.5" />
+        <EntityTypeShape EntityType="GameModel.Game" Width="1.5" PointX="3.125" PointY="2.5" />
+        <EntityTypeShape EntityType="GameModel.NewGameRequest" Width="2.125" PointX="5" PointY="2.5" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

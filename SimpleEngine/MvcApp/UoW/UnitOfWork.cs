@@ -13,6 +13,7 @@ namespace MvcApp.UoW
 
         #region RepositoriesPrivate
         private IGameRepository _gameRepository;
+        private INewGameRequestRepository _newGameRequestRepository;
         #endregion RepositoriesPrivate
 
         public UnitOfWork(GameModelContainer context)
@@ -36,6 +37,14 @@ namespace MvcApp.UoW
             get
             {
                 return _gameRepository ?? (_gameRepository = new GameRepository(_context));
+            }
+        }
+
+        public INewGameRequestRepository NewGameRequestRepository
+        {
+            get
+            {
+                return _newGameRequestRepository ?? (_newGameRequestRepository = new NewGameRequestRepository(_context));
             }
         }
         #endregion Repositories

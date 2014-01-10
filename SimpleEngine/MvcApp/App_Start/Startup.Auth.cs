@@ -9,7 +9,7 @@ using Owin;
 
 namespace MvcApp.App_Start
 {
-
+    // TODO: remove owin from project for a while
     [assembly: OwinStartup(typeof(MvcApp.Startup))]
     public partial class Startup
     {

@@ -175,11 +175,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GameModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="EfDataModels\NewGameRequest.cs">
+      <DependentUpon>GameModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\BoardModel.cs" />
     <Compile Include="Models\GameModel.cs" />
+    <Compile Include="Models\OpenGameListModel.cs" />
     <Compile Include="Models\TurnModel.cs" />
     <Compile Include="Models\User\RegisterUserModel.cs" />
     <Compile Include="Models\User\SignInModel.cs" />
@@ -187,11 +191,15 @@
     <Compile Include="Startup.cs" />
     <Compile Include="UoW\BaseRepository.cs" />
     <Compile Include="UoW\BaseService.cs" />
+    <Compile Include="UoW\CustomSpecificParser.cs" />
     <Compile Include="UoW\GameRepository.cs" />
+    <Compile Include="UoW\GameRequestService.cs" />
     <Compile Include="UoW\GameService.cs" />
     <Compile Include="UoW\IGameRepository.cs" />
+    <Compile Include="UoW\INewGameRequest.cs" />
     <Compile Include="UoW\IRepository.cs" />
     <Compile Include="UoW\IUnitOfWork.cs" />
+    <Compile Include="UoW\NewGameRequestRepository.cs" />
     <Compile Include="UoW\UnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -277,7 +285,6 @@
     <Content Include="Db\AspNetIdentityDataBaseCustom.sql" />
     <Content Include="Db\test.mdf" />
     <Content Include="Db\test_log.ldf" />
-    <Content Include="EfDataModels\GameModel.edmx.sql" />
     <Content Include="Global.asax" />
     <EntityDeploy Include="EfDataModels\GameModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>

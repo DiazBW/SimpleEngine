@@ -48,17 +48,17 @@ namespace SimpleEngine.Classes.Game
 
             private bool IsPlayerInGame(Int32 playerId)
             {
-                return _game.PlayerOneId == playerId || _game.PlayerTwoId == playerId;
+                return _game.CurrentGameState.PlayerOneId == playerId || _game.CurrentGameState.PlayerTwoId == playerId;
             }
 
             private bool IsPlayerActive(Int32 playerId)
             {
-                return _game.ActivePlayerId == playerId;
+                return _game.CurrentGameState.ActivePlayerId == playerId;
             }
 
             private bool IsTurnValueCorrect(GameTurnStruct turn)
             {
-                return _game.ActiveCellType == turn.Value;
+                return _game.CurrentGameState.ActiveCellType == turn.Value;
             }
         }
     }

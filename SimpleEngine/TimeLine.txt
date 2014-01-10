@@ -17,3 +17,5 @@
 
 3h - game cycle
 1h - surrender and skip turn
+2.5h - rewriting with GameState class and inner board
++3h - services separation

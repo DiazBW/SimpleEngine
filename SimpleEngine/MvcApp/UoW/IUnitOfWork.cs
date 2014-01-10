@@ -11,6 +11,7 @@ namespace MvcApp.UoW
 
         #region Repositories
         IGameRepository GameRepository { get; }
+        INewGameRequestRepository NewGameRequestRepository { get; }
         #endregion Repositories
     }
 }

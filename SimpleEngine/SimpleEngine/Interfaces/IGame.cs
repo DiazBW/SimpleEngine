@@ -1,18 +1,15 @@
 ﻿using System;
-using SimpleEngine.Classes;
+using SimpleEngine.Classes.Game;
 
 namespace SimpleEngine.Interfaces
 {
     public interface IGame
     {
-        Int32 ActivePlayerId { get; }
-        CellType ActiveCellType { get; }
-        Boolean IsGameOver { get; }
+        GameState CurrentGameState { get; }
 
-        Board Board { get; }
-
-        void PlayerSkipTurn(Int32 playerId);
+        void SkipTurn(Int32 playerId);
+        void Surrender(Int32 playerId);
         void Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId);
-        void LoadState(Int32 activePlayerId, Board board);
+        void LoadState(GameState gameState);
     }
 }

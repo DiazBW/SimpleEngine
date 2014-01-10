@@ -101,14 +101,14 @@ namespace EngineTestApp
         {
             if (e.KeyChar == (char) Keys.Space)
             {
-                TheGame.PlayerSkipTurn(ActivePlayerId);
+                TheGame.SkipTurn(ActivePlayerId);
                 ChangeActivePlayer();
                 RefreshBoard();
             }
             if (e.KeyChar == (char) Keys.C)
             {
                 TheGame = new Game(PLAYER_ONE_ID, PLAYER_TWO_ID);
-                ActivePlayerId = TheGame.ActivePlayerId;
+                ActivePlayerId = TheGame.CurrentGameState.ActivePlayerId;
                 RefreshBoard();
             }
         }
@@ -125,7 +125,7 @@ namespace EngineTestApp
             {
                 for (var j = 0; j < gameSize; j++)
                 {
-                    CellType newValue = TheGame.Board.Cells[i, j];
+                    CellType newValue = TheGame.CurrentGameState.Board.Cells[i, j];
                     foreach (var control in this.boardPanel.Controls)
                     {
                         var cellPicBox = control as CellPictureBox;
@@ -137,7 +137,7 @@ namespace EngineTestApp
                 }
             }
 
-            if(TheGame.IsGameOver)
+            if(TheGame.CurrentGameState.IsGameOver)
             {
                 var msg = String.Format("Game finished with score Black: {0}; White: {1};", TheGame.Score.BlackScore, TheGame.Score.WhiteScore);
                 MessageBox.Show(msg);

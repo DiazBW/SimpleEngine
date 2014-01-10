@@ -26,5 +26,13 @@ namespace MvcApp.UoW
                 return _unitOfWork.GameRepository;
             }
         }
+
+        protected INewGameRequestRepository NewGameRequestRepository
+        {
+            get
+            {
+                return _unitOfWork.NewGameRequestRepository;
+            }
+        }
     }
 }

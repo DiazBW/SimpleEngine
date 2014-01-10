@@ -10,6 +10,7 @@ namespace SimpleEngine.Classes.Game
         {
             private readonly Game _game;
 
+            // MaybeTake GameState instead of game
             public TurnValidator(Game game)
             {
                 _game = game;
@@ -21,22 +22,22 @@ namespace SimpleEngine.Classes.Game
             /// <exception cref="RepeatBoardStateException">Trying to turn that leads to suicide without attack.</exception>
             public void Validate(GameTurnStruct turn, String previousBoardStateHash)
             {
-                if (!IsTurnIntoBoard(turn, _game.Board.Size))
+                if (!IsTurnIntoBoard(turn, _game.CurrentGameState.Board.Size))
                 {
                     throw new TurnOutOfRangeException(turn);
                 }
 
-                if (!IsCellFree(turn, _game.Board))
+                if (!IsCellFree(turn, _game.CurrentGameState.Board))
                 {
                     throw new TurnToBusyCellException(turn);
                 }
 
-                if (IsSuicide(turn, _game.Board))
+                if (IsSuicide(turn, _game.CurrentGameState.ActivePlayerId, _game.CurrentGameState.Board))
                 {
                     throw new SuicideException(turn);
                 }
 
-                if (IsBoardStateRepeated(turn, previousBoardStateHash))
+                if (IsBoardStateRepeated(turn, _game.CurrentGameState.ActivePlayerId, previousBoardStateHash))
                 {
                     throw new RepeatBoardStateException(turn, previousBoardStateHash);
                 }
@@ -53,7 +54,7 @@ namespace SimpleEngine.Classes.Game
                 return board.Cells[turn.RowIndex, turn.ColumnIndex] == CellType.Empty;
             }
 
-            private Boolean IsSuicide(GameTurnStruct turn, Board board)
+            private Boolean IsSuicide(GameTurnStruct turn, Int32 playerId, Board board)
             {
                 Func<bool> suicideCheck = () =>
                 {
@@ -61,18 +62,18 @@ namespace SimpleEngine.Classes.Game
                     return shapesForRemove.Count == 1 && shapesForRemove[0].Contains(turn.RowIndex, turn.ColumnIndex);
                 };
 
-                return _game.EmulateTurnAndCheck(turn, suicideCheck);
+                return _game.EmulateTurnAndCheck(turn, playerId, suicideCheck);
             }
 
-            private Boolean IsBoardStateRepeated(GameTurnStruct turn, String previousBoardStateHash)
+            private Boolean IsBoardStateRepeated(GameTurnStruct turn, Int32 playerId, String previousBoardStateHash)
             {
                 Func<bool> boardRepeatCheck = () =>
                 {
-                    var newBoardStateHash = _game.Board.GetCustomHash();
+                    var newBoardStateHash = _game.CurrentGameState.Board.GetCustomHash();
                     return newBoardStateHash == previousBoardStateHash;
                 };
 
-                return _game.EmulateTurnAndCheck(turn, boardRepeatCheck);
+                return _game.EmulateTurnAndCheck(turn, playerId, boardRepeatCheck);
             }
         }
     }

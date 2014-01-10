@@ -12,12 +12,9 @@ namespace MvcApp.EfDataModels
     using System;
     using System.Collections.Generic;
     
-    public partial class Game
+    public partial class NewGameRequest
     {
         public int Id { get; set; }
         public int PlayerOneId { get; set; }
-        public Nullable<int> PlayerTwoId { get; set; }
-        public bool IsFinished { get; set; }
-        public string JsonGameState { get; set; }
     }
 }

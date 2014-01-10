@@ -14,14 +14,14 @@ namespace MvcApp.Models
 
         public BoardModel(Game theGame)
         {
-            Size = theGame.Board.Size;
+            Size = theGame.CurrentGameState.Board.Size;
             
             Board = new Int32[Size, Size];
             for (var i = 0; i < Size; i++)
             {
                 for (var j = 0; j < Size; j++)
                 {
-                    Board[i, j] = (Int32)theGame.Board.Cells[i, j];
+                    Board[i, j] = (Int32)theGame.CurrentGameState.Board.Cells[i, j];
                 }
             }
         }

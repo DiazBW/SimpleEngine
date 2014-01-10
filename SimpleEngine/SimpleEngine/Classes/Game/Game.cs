@@ -1,61 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Linq;
 using SimpleEngine.Interfaces;
 
 namespace SimpleEngine.Classes.Game
 {
     // TODO: add regions!
+    // TODO: shapes and board - improve somehow
     public partial class Game : IGame
     {
-        // TODO: remove
-        private const Int32 BOARD_SIZE = 19;
+        private readonly Int32 BoardSize = 19;
+        private List<Shape> Shapes;
 
-        public Boolean IsGameOver
-        {
-            get
-            {
-                return IsPlayerOneSurrender || IsPlayerTwoSurrender || (IsPlayerOneSkip && IsPlayerTwoSkip);
-            }
-        }
-
-        //TODO: maybe double surrender throw exception
-        public Boolean IsPlayerOneSurrender { get; private set; }
-        public Boolean IsPlayerTwoSurrender { get; private set; }
-
-        public Boolean IsPlayerOneSkip { get; private set; }
-        public Boolean IsPlayerTwoSkip { get; private set; }
-
-        public readonly Int32 PlayerOneId;
-        public readonly Int32 PlayerTwoId;
+        public GameState CurrentGameState { get; private set; }
         public readonly GameScore Score;
 
-        public Int32 ActivePlayerId { get; private set; }
-        public CellType ActiveCellType
-        {
-            get { return ActivePlayerId == PlayerOneId ? CellType.Black : CellType.White; }
-        }
-
-        public List<Shape> Shapes;
-
-        //TODO: oprimize!
-        public Board Board
-        {
-            get
-            {
-                var board = new Board(BOARD_SIZE);
-                foreach (var shape in Shapes)
-                {
-                    foreach (var cell in shape.Cells)
-                    {
-                        board.Cells[cell.RowIndex, cell.ColumnIndex] = shape.CellTypeValue;
-                    }
-                }
-                return board;
-            }
-        }
-
+        //TODO: move into GameState?
         private string _previousBoardHashForPlayerOne = String.Empty;
         private string _previousBoardHashForPlayerTwo = String.Empty;
 
@@ -64,46 +24,110 @@ namespace SimpleEngine.Classes.Game
 
         public Game(Int32 playerOneId, Int32 playerTwoId)
         {
-            IsPlayerOneSkip = false;
-            IsPlayerTwoSkip = false;
-            IsPlayerOneSurrender = false;
-            IsPlayerTwoSurrender = false;
+            CurrentGameState = new GameState
+            {
+                ActivePlayerId = playerOneId,
+                PlayerOneId = playerOneId,
+                PlayerTwoId = playerTwoId,
+                IsPlayerOneSkip = false,
+                IsPlayerTwoSkip = false,
+                SurrenderPlayerId = null,
+                Board = new Board(BoardSize)
+            };
 
-            PlayerOneId = playerOneId;
-            PlayerTwoId = playerTwoId;
-            ActivePlayerId = PlayerOneId;
             Score = new GameScore();
-
             Shapes = new List<Shape>();
 
             _playerValidator = new PlayerValidator(this);
             _turnValidator = new TurnValidator(this);
         }
 
-        //TODO: load game over state and surrendered id
-        public void LoadState(Int32 activePlayerId, Board board, Boolean isPlayerOneSkip, Boolean isPlayerTwoSkip, Boolean isPlayerOneSurrender, Boolean isPlayerTwoSurrender)
+        #region IGame interface implementation
+        //TODO: turn validation!
+        public void Surrender(Int32 playerId)
         {
-            if (activePlayerId != PlayerOneId && activePlayerId != PlayerTwoId)
-            {
-                var msg = String.Format("Player {0} is not a member of this game.", activePlayerId);
-                throw new ArgumentException(msg);
-            }
+            if (CurrentGameState.IsGameOver)
+                return;
+            if (playerId != CurrentGameState.PlayerOneId && playerId != CurrentGameState.PlayerTwoId)
+                throw new ArgumentException("playerId");
 
-            if (board.Size != Board.Size)
-            {
-                var msg = String.Format("Baord size must be {0}.", Board.Size);
-                throw new ArgumentException(msg);
-            }
-
-            ActivePlayerId = activePlayerId;
-            IsPlayerOneSkip = isPlayerOneSkip;
-            IsPlayerTwoSkip = isPlayerTwoSkip;
-            IsPlayerOneSurrender = isPlayerOneSurrender;
-            IsPlayerTwoSurrender = isPlayerTwoSurrender;
-            GenerateShapesByBoard(board);
+            CurrentGameState.SurrenderPlayerId = playerId;
         }
 
-        private void GenerateShapesByBoard(Board board)
+        //TODO: turn validation!
+        public void SkipTurn(Int32 playerId)
+        {
+            if (CurrentGameState.IsGameOver) return;
+
+            SkipTurnValidation(playerId);
+            SkipTurnProceed();
+        }
+
+        public void LoadState(GameState gameState)
+        {
+            if (gameState.ActivePlayerId != CurrentGameState.PlayerOneId && gameState.ActivePlayerId != CurrentGameState.PlayerTwoId)
+            {
+                var msg = String.Format("Player {0} is not a member of this game.", gameState.ActivePlayerId);
+                throw new ArgumentException(msg);
+            }
+
+            if (gameState.Board.Size != BoardSize)
+            {
+                var msg = String.Format("Baord size must be {0}.", BoardSize);
+                throw new ArgumentException(msg);
+            }
+
+            CurrentGameState = GameState.GetDeepCopy(gameState);
+            GenerateShapes(CurrentGameState.Board);
+        }
+
+        public void Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId)
+        {
+            if (CurrentGameState.IsGameOver) return;
+
+            var turn = new GameTurnStruct()
+            {
+                RowIndex = rowIndex,
+                ColumnIndex = columnIndex,
+                Value = CurrentGameState.ActiveCellType
+            };
+            Turn(turn, playerId);
+        }
+        #endregion IGame interface implementation
+
+        #region TurnValidation
+        private void ValidateTurn(GameTurnStruct turn, Int32 playerId)
+        {
+            _playerValidator.ValidateTurn(turn, playerId);
+            var previousHash = GetBoardStateForActiveUser();
+            _turnValidator.Validate(turn, previousHash);
+        }
+
+        private string GetBoardStateForActiveUser()
+        {
+            return CurrentGameState.ActivePlayerId == CurrentGameState.PlayerOneId ? _previousBoardHashForPlayerTwo : _previousBoardHashForPlayerOne;
+        }
+
+        //BUG: rewrite state resave!
+        private Boolean EmulateTurnAndCheck(GameTurnStruct turn, Int32 playerId, Func<Boolean> checkFunc)
+        {
+            // Save game state
+            var gameStateBackup = GameState.GetDeepCopy(CurrentGameState);
+
+            // Calculate turn 
+            Turn(turn, playerId);
+
+            // Run check
+            var checkResult = checkFunc.Invoke();
+
+            // Load game state
+            LoadState(gameStateBackup);
+
+            return checkResult;
+        }
+        #endregion TurnValidation
+
+        private void GenerateShapes(Board board)
         {
             for (var rowIndex = 0; rowIndex < board.Size; rowIndex++)
             {
@@ -123,48 +147,6 @@ namespace SimpleEngine.Classes.Game
             }
         }
 
-        private Boolean EmulateTurnAndCheck(GameTurnStruct turn, Func<Boolean> checkFunc)
-        {
-            // Save game state
-            var shapesBeforeStep = Shape.GetDeepCopy(Shapes);
-
-            // Calculate turn 
-            TurnProceed(turn);
-
-            // Run check
-            var checkResult = checkFunc.Invoke();
-
-            // Load game state
-            Shapes = shapesBeforeStep;
-
-            return checkResult;
-        }
-
-        //TODO: turn validation!
-        public void PlayerSurrender(Int32 playerId)
-        {
-            if (IsGameOver) return;
-
-            if (playerId == PlayerOneId)
-            {
-                IsPlayerOneSurrender = true;
-            }
-            //TODO: without turn validation playerId can be != One and != Two
-            if (playerId == PlayerTwoId)
-            {
-                IsPlayerTwoSurrender = true;
-            }
-        }
-
-        //TODO: turn validation!
-        public void PlayerSkipTurn(Int32 playerId)
-        {
-            if (IsGameOver) return;
-
-            SkipTurnValidation(playerId);
-            SkipTurnProceed();
-        }
-
         private void SkipTurnValidation(Int32 playerId)
         {
             _playerValidator.ValidateTurnSkiping(playerId);
@@ -174,7 +156,7 @@ namespace SimpleEngine.Classes.Game
         {
             ActivePlayerSkipTurnProceed();
 
-            if (IsGameOver)
+            if (CurrentGameState.IsGameOver)
             {
                 //TODO: into one function this pair of guys!
                 FillBoardWithRocksAfterGameFinished();
@@ -188,66 +170,60 @@ namespace SimpleEngine.Classes.Game
 
         private void ActivePlayerSkipTurnProceed()
         {
-            if (ActivePlayerId == PlayerOneId)
+            if (CurrentGameState.ActivePlayerId == CurrentGameState.PlayerOneId)
             {
-                IsPlayerOneSkip = true;
+                CurrentGameState.IsPlayerOneSkip = true;
             }
             else
             {
-                IsPlayerTwoSkip = true;
+                CurrentGameState.IsPlayerTwoSkip = true;
             }
         }
 
         private void CalculateFinalScore()
         {
-            if (!IsGameOver) return;
+            //TODO: required?
+            if (!CurrentGameState.IsGameOver) return;
 
-            Score.GameFinished(Board);
+            Score.GameFinished(CurrentGameState.Board);
         }
 
         private void DropTurnSkipingState()
         {
-            IsPlayerOneSkip = false;
-            IsPlayerTwoSkip = false;
-        }
-
-        public void Turn(Int32 rowIndex, Int32 columnIndex, Int32 playerId)
-        {
-            var turn = new GameTurnStruct()
-            {
-                RowIndex = rowIndex,
-                ColumnIndex = columnIndex,
-                Value = ActiveCellType
-            };
-            Turn(turn, playerId);
+            CurrentGameState.IsPlayerOneSkip = false;
+            CurrentGameState.IsPlayerTwoSkip = false;
         }
 
         private void Turn(GameTurnStruct turn, Int32 playerId)
         {
-            if (IsGameOver) return;
-
             ValidateTurn(turn, playerId);
-
-            TurnProceed(turn);
-
-            DropTurnSkipingState();
-
+            // TODO: ugly, think about improvement!
             SetBoardStateForActiveUser();
+            UpdateGameStateExceptBoard(turn);
+            UpdateShapes(turn);
+            UpdateBoardByShapes();
+        }
 
+        private void UpdateGameStateExceptBoard(GameTurnStruct turn)
+        {   
+            DropTurnSkipingState();
             ChangeActivePlayer();
         }
 
-        private void ValidateTurn(GameTurnStruct turn, Int32 playerId)
+        private void UpdateBoardByShapes()
         {
-            _playerValidator.ValidateTurn(turn, playerId);
-            var previousHash = GetBoardStateForActiveUser();
-            _turnValidator.Validate(turn, previousHash);
+            CurrentGameState.Board = new Board(BoardSize);
+            foreach (var shape in Shapes)
+            {
+                foreach (var cell in shape.Cells)
+                {
+                    CurrentGameState.Board.Cells[cell.RowIndex, cell.ColumnIndex] = shape.CellTypeValue;
+                }
+            }
         }
 
-        private void TurnProceed(GameTurnStruct turn)
+        private void UpdateShapes(GameTurnStruct turn)
         {
-            if (IsGameOver) return;
-
             var newShapeId = CreateNewShape(turn);
             MergeShapesInto(newShapeId, turn);
             RemoveWithoutBreath(ignoredShapeId: newShapeId);
@@ -293,15 +269,6 @@ namespace SimpleEngine.Classes.Game
             Shapes.RemoveAll(s => idsForRemove.Contains(s.Id));
         }
 
-        // TODO: replace with GetShapesWithoutBreath
-        //private void RemoveWithoutBreath(Int32 ignoredShapeId)
-        //{
-        //    Shapes.RemoveAll(shape => 
-        //        shape.Id != ignoredShapeId && 
-        //        !HaveShapeBreath(shape)
-        //    );
-        //}
-
         private List<Shape> GetShapesWithoutBreath()
         {
             return Shapes.Where(shape => !HaveShapeBreath(shape)).ToList();
@@ -309,19 +276,14 @@ namespace SimpleEngine.Classes.Game
 
         private void ChangeActivePlayer()
         {
-            ActivePlayerId = ActivePlayerId == PlayerOneId ? PlayerTwoId : PlayerOneId;
-        }
-
-        private string GetBoardStateForActiveUser()
-        {
-            return ActivePlayerId == PlayerOneId ? _previousBoardHashForPlayerTwo : _previousBoardHashForPlayerOne;
+            CurrentGameState.ActivePlayerId = CurrentGameState.ActivePlayerId == CurrentGameState.PlayerOneId ? CurrentGameState.PlayerTwoId : CurrentGameState.PlayerOneId;
         }
 
         //TODO: refactoring _hashes
         private void SetBoardStateForActiveUser()
         {
-            var currentHash = Board.GetCustomHash();
-            if (ActivePlayerId == PlayerOneId)
+            var currentHash = CurrentGameState.Board.GetCustomHash();
+            if (CurrentGameState.ActivePlayerId == CurrentGameState.PlayerOneId)
             {
                 _previousBoardHashForPlayerTwo = currentHash;
             }
@@ -343,48 +305,33 @@ namespace SimpleEngine.Classes.Game
 
         private List<Shape> GetConnectedShapes(GameTurnStruct turn)
         {
-            return Shapes.Where(s => s.IsConnectedWith(turn.RowIndex, turn.ColumnIndex, turn.Value, BOARD_SIZE)).ToList();
+            return Shapes.Where(s => s.IsConnectedWith(turn.RowIndex, turn.ColumnIndex, turn.Value, BoardSize)).ToList();
         }
 
         // TODO: change to linq after tests
         private bool HaveShapeBreath(Shape shape)
         {
-            var connections = shape.GetConnectionCells(BOARD_SIZE, BOARD_SIZE);
-            return connections.Any(connection => Board.Cells[connection.RowIndex, connection.ColumnIndex] == CellType.Empty);
+            var connections = shape.GetConnectionCells(BoardSize, BoardSize);
+            return connections.Any(connection => CurrentGameState.Board.Cells[connection.RowIndex, connection.ColumnIndex] == CellType.Empty);
         }
 
+        // BUG: if board stored into memory - while never end
         private void FillBoardWithRocksAfterGameFinished()
         {
-            if (!IsGameOver) return;
+            if (!CurrentGameState.IsGameOver) return;
 
-            while (HasBoardEmptyCells())
+            while (CurrentGameState.Board.HasEmptyCell())
             {
                 foreach (var shape in Shapes)
                 {
-                    var connections = shape.GetConnectionCells(Board.Size, Board.Size);
+                    var connections = shape.GetConnectionCells(BoardSize, BoardSize);
                     foreach (var conn in connections)
                     {
-                        if (Board.Cells[conn.RowIndex, conn.ColumnIndex] == CellType.Empty)
+                        if (CurrentGameState.Board.Cells[conn.RowIndex, conn.ColumnIndex] == CellType.Empty)
                             shape.Add(conn.RowIndex, conn.ColumnIndex);
                     }
                 }
             }
-        }
-
-        //TODO: for / for board.Cell - replace with enumerator.
-        //TODO: board.Cell[] - replace with indexer like Board[i,j].
-        //TODO: oprimize!
-        private bool HasBoardEmptyCells()
-        {
-            for (var i = 0; i < Board.Size; i++)
-            {
-                for (var j = 0; j < Board.Size; j++)
-                {
-                    if (Board.Cells[i, j] == CellType.Empty)
-                        return true;
-                }
-            }
-            return false;
         }
     }
 

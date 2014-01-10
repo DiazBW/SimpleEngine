@@ -5,26 +5,34 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="GameModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-  <EntityContainer Name="GameModelStoreContainer">
-    <EntitySet Name="Games" EntityType="GameModel.Store.Games" store:Type="Tables" Schema="dbo" />
-  </EntityContainer>
-  <EntityType Name="Games">
-    <Key>
-      <PropertyRef Name="Id" />
-    </Key>
-    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="PlayerOneId" Type="int" Nullable="false" />
-    <Property Name="PlayerTwoId" Type="int" Nullable="true" />
-    <Property Name="ActivePlayerId" Type="int" Nullable="false" />
-    <Property Name="Json" Type="nvarchar(max)" Nullable="false" />
-    <Property Name="IsFinished" Type="bit" Nullable="false" />
-  </EntityType>
-</Schema></edmx:StorageModels>
+        <EntityContainer Name="GameModelStoreContainer">
+          <EntitySet Name="Games" EntityType="GameModel.Store.Games" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="NewGameRequests" EntityType="GameModel.Store.NewGameRequests" store:Type="Tables" Schema="dbo" />
+        </EntityContainer>
+        <EntityType Name="Games">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="PlayerOneId" Type="int" Nullable="false" />
+          <Property Name="PlayerTwoId" Type="int" />
+          <Property Name="IsFinished" Type="bit" Nullable="false" />
+          <Property Name="JsonGameState" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="NewGameRequests">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="PlayerOneId" Type="int" Nullable="false" />
+        </EntityType>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="GameModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
         <EntityContainer Name="GameModelContainer" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Games" EntityType="GameModel.Game" />
+          <EntitySet Name="NewGameRequests" EntityType="GameModel.NewGameRequest" />
         </EntityContainer>
         <EntityType Name="Game">
           <Key>
@@ -33,9 +41,15 @@
           <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="Int32" Name="PlayerOneId" Nullable="false" />
           <Property Type="Int32" Name="PlayerTwoId" Nullable="true" />
-          <Property Type="Int32" Name="ActivePlayerId" Nullable="false" />
-          <Property Type="String" Name="Json" Nullable="false" />
           <Property Type="Boolean" Name="IsFinished" Nullable="false" />
+          <Property Type="String" Name="JsonGameState" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="NewGameRequest">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="PlayerOneId" Nullable="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -46,15 +60,22 @@
     <EntitySetMapping Name="Games">
       <EntityTypeMapping TypeName="IsTypeOf(GameModel.Game)">
         <MappingFragment StoreEntitySet="Games">
-          <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="JsonGameState" ColumnName="JsonGameState" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="PlayerOneId" ColumnName="PlayerOneId" />
           <ScalarProperty Name="PlayerTwoId" ColumnName="PlayerTwoId" />
-          <ScalarProperty Name="ActivePlayerId" ColumnName="ActivePlayerId" />
-          <ScalarProperty Name="Json" ColumnName="Json" />
           <ScalarProperty Name="IsFinished" ColumnName="IsFinished" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+          <EntitySetMapping Name="NewGameRequests">
+            <EntityTypeMapping TypeName="GameModel.NewGameRequest">
+              <MappingFragment StoreEntitySet="NewGameRequests">
+                <ScalarProperty Name="PlayerOneId" ColumnName="PlayerOneId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping></edmx:Mappings>
   </edmx:Runtime>
@@ -70,6 +91,7 @@
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="True" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="False" />
       </DesignerInfoPropertySet>
     </edmx:Options>
     <!-- Diagram content (shape and connector positions) -->

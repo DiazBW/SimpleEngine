@@ -37,6 +37,7 @@ namespace MvcApp.UoW
             Table.Add(entity);
         }
 
+        // TODO: add delete by id!
         public void DeleteOnCommit(TEntity entity)
         {
             Table.Remove(entity);

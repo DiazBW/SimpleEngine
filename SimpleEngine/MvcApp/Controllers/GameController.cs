@@ -12,8 +12,18 @@ namespace MvcApp.Controllers
     //TODO: validation for all
     public class GameController : Controller
     {
-        //
-        // GET: /Game/
+        private readonly GameService _gameService;
+        private readonly GameRequestService _gameRequestService;
+
+        public GameController()
+        {
+            // TODO: Maybe use autofac!
+            var dbContext = new GameModelContainer();
+            var unitOfWork = new UnitOfWork(dbContext);
+
+            _gameService = new GameService(unitOfWork);
+            _gameRequestService = new GameRequestService(unitOfWork);
+        }
 
         [HttpGet]
         public ActionResult Index()
@@ -33,32 +43,23 @@ namespace MvcApp.Controllers
         [HttpPost]
         public ActionResult OpenGame(Int32 playerId)
         {
-            var uow = new UnitOfWork(new GameModelContainer());
-            GameService service = new GameService(uow);
-
-            var newGameId = service.OpenNewGame(playerId);
-
-            return Json(new { NewGameId = newGameId });
+            _gameRequestService.NewGameRequest(playerId);
+            return Json("OK");
         }
 
         [HttpPost]
-        public ActionResult CloseGame(Int32 gameId, Int32 playerId)
+        public ActionResult CloseGame(Int32 gameRequestId, Int32 playerId)
         {
-            var uow = new UnitOfWork(new GameModelContainer());
-            GameService service = new GameService(uow);
-
-            service.CloseGame(gameId, playerId);
-
+            _gameRequestService.GameRequestAccept(gameRequestId, playerId);
             return Json("OK");
         }
 
         [HttpPost]
         public ActionResult GetGame(Int32 gameId)
         {
-            var uow = new UnitOfWork(new GameModelContainer());
-            GameService service = new GameService(uow);
+            var game = _gameService.Get(gameId);
 
-            var game = service.Get(gameId);
+            //_gameService.Test(gameId);
 
             var json = JsonConvert.SerializeObject(game);
 
@@ -74,10 +75,7 @@ namespace MvcApp.Controllers
                 String playerId = Request.Cookies.Get("playerId").Value;
                 if (!String.IsNullOrWhiteSpace(playerId))
                 {
-                    var uow = new UnitOfWork(new GameModelContainer());
-                    GameService service = new GameService(uow);
-
-                    service.Turn(model, Int32.Parse(playerId));
+                    _gameService.Turn(model, Int32.Parse(playerId));
                     return Json("OK");
                 }
             }
@@ -92,11 +90,7 @@ namespace MvcApp.Controllers
                 String playerId = Request.Cookies.Get("playerId").Value;
                 if (!String.IsNullOrWhiteSpace(playerId))
                 {
-                    var uow = new UnitOfWork(new GameModelContainer());
-                    GameService service = new GameService(uow);
-
-                    service.SkipTurn(gameId, Int32.Parse(playerId));
-
+                    _gameService.SkipTurn(gameId, Int32.Parse(playerId));
                     return Json("OK");
                 }
             }
@@ -111,10 +105,7 @@ namespace MvcApp.Controllers
                 String playerId = Request.Cookies.Get("playerId").Value;
                 if (!String.IsNullOrWhiteSpace(playerId))
                 {
-                    var uow = new UnitOfWork(new GameModelContainer());
-                    GameService service = new GameService(uow);
-
-                    service.Surrender(gameId, Int32.Parse(playerId));
+                    _gameService.Surrender(gameId, Int32.Parse(playerId));
                     return Json("OK");
                 }
             }

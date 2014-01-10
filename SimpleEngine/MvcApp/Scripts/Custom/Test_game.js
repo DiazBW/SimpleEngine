@@ -204,7 +204,8 @@
         };
         
         self.CloseGame = function () {
-            var postData = { playerId: self.PlayerTwoId(), gameId: self.GameId() };
+            // BUG: self.GameId - gameRequestId - create single page - for a while its bug
+            var postData = { playerId: self.PlayerTwoId(), gameRequestId: self.GameId() };
             var jsonData = JSON.stringify(postData, null, 2);
             $.ajax({
                 url: '/Game/CloseGame',
